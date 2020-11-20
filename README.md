@@ -1,4 +1,5 @@
 # CS180Project5
+ALL TIMES ARE EST
 BetterBook
  
 Server at ajohnson132490.xyz
