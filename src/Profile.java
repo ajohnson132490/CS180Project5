@@ -18,6 +18,7 @@ public class Profile implements Serializable {
     private String name;                //Profile owner's name
     private String privacySetting;      //Privacy setting - either "Public", "Private", or "Protected"
     private String contactInformation;  //User's contact information -- potentially change to fixed size array
+    private String aboutMe;             //User's bio to be displayed on profile
 
     //private Image profilePicture;
 
@@ -27,8 +28,8 @@ public class Profile implements Serializable {
 
     /**
      * Constructor for a Profile object. Takes parameters for username, password, name, and contact information.
-     * Sets privacy setting to public, and initializes ArrayLists for likes and interests, friends list,
-     * and friend requests list.
+     * Sets privacy setting to public, aboutMe to an empty String, and initializes ArrayLists
+     * for likes and interests, friends list, and friend requests list.
      *
      * @param username           username to be set
      * @param password           password to be set
@@ -41,6 +42,7 @@ public class Profile implements Serializable {
         this.name = name;
         this.contactInformation = contactInformation;
         this.privacySetting = "Public";
+        this.aboutMe = "";
 
         this.likesAndInterests = new ArrayList<String>();
         this.friendsList = new ArrayList<Profile>();
@@ -185,6 +187,7 @@ public class Profile implements Serializable {
 
     /**
      * Gets the user's friend request list
+     *
      * @return user's friend request list
      */
     public ArrayList<Profile> getFriendRequestList() {
@@ -219,5 +222,21 @@ public class Profile implements Serializable {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Gets the user's bio
+     * @return the user's bio
+     */
+    public String getAboutMe() {
+        return this.aboutMe;
+    }
+
+    /**
+     * Sets the user's bio
+     * @param aboutMe bio to be set
+     */
+    public void setAboutMe(String aboutMe) {
+        this.aboutMe = aboutMe;
     }
 }
