@@ -1,0 +1,223 @@
+import java.util.ArrayList;
+import java.io.Serializable;
+
+/**
+ * Profile
+ * <p>
+ * A class that creates Profiles for BetterBook
+ *
+ * @author Paul Kraessig | CS18000 Project 5 | Group 007-2
+ * @version 22 November 2020
+ */
+public class Profile implements Serializable {
+
+    //possible static default profile picture
+
+    private String username;            //Unique username
+    private String password;            //User's password
+    private String name;                //Profile owner's name
+    private String privacySetting;      //Privacy setting - either "Public", "Private", or "Protected"
+    private String contactInformation;  //User's contact information -- potentially change to fixed size array
+
+    //private Image profilePicture;
+
+    private ArrayList<String> likesAndInterests;    //User's likes and interests -- potentially have size cap
+    private ArrayList<Profile> friendsList;         //User's friends list
+    private ArrayList<Profile> friendRequestList;   //User's list of friend requests
+
+    /**
+     * Constructor for a Profile object. Takes parameters for username, password, name, and contact information.
+     * Sets privacy setting to public, and initializes ArrayLists for likes and interests, friends list,
+     * and friend requests list.
+     *
+     * @param username           username to be set
+     * @param password           password to be set
+     * @param name               name to be set
+     * @param contactInformation contact info to be set
+     */
+    public Profile(String username, String password, String name, String contactInformation) {
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.contactInformation = contactInformation;
+        this.privacySetting = "Public";
+
+        this.likesAndInterests = new ArrayList<String>();
+        this.friendsList = new ArrayList<Profile>();
+        this.friendRequestList = new ArrayList<Profile>();
+    }
+
+    /**
+     * Gets the profile's username
+     *
+     * @return profile's username
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * Sets the profile's username
+     *
+     * @param username username to be set
+     */
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    /**
+     * Sets the profile's password
+     *
+     * @param password password to be set
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    /**
+     * Gets the profile owner's name
+     *
+     * @return profile owner's name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the profile owner's name
+     *
+     * @param name name to be set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Gets the profile's privacy setting
+     *
+     * @return profile's privacy setting
+     */
+    public String getPrivacySetting() {
+        return privacySetting;
+    }
+
+    /**
+     * Sets the profile's privacy setting
+     *
+     * @param privacySetting privacy setting to be set
+     */
+    public void setPrivacySetting(String privacySetting) {
+        this.privacySetting = privacySetting;
+    }
+
+    /**
+     * Gets the user's contact information
+     *
+     * @return user's contact information
+     */
+    public String getContactInformation() {
+        return contactInformation;
+    }
+
+    /**
+     * Sets the user's contact information
+     *
+     * @param contactInformation contact info to be set
+     */
+    public void setContactInformation(String contactInformation) {
+        this.contactInformation = contactInformation;
+    }
+
+    /**
+     * Gets the user's likes and interests
+     *
+     * @return user's likes and interests
+     */
+    public ArrayList<String> getLikesAndInterests() {
+        return likesAndInterests;
+    }
+
+    /**
+     * Sets the users likes and interests
+     *
+     * @param likesAndInterests likes and interests to be set
+     */
+    public void setLikesAndInterests(ArrayList<String> likesAndInterests) {
+        this.likesAndInterests = likesAndInterests;
+    }
+
+    /**
+     * Gets the user's friends list
+     *
+     * @return user's friends list
+     */
+    public ArrayList<Profile> getFriendsList() {
+        return friendsList;
+    }
+
+    /**
+     * Adds a friend to the user's friends list if the two profiles are not already friends
+     *
+     * @param profile profile to be added
+     * @return true if the users are now friends, false if they were already friends
+     */
+    public boolean addFriend(Profile profile) {
+        if (!this.friendsList.contains(profile)) {
+            this.friendsList.add(profile);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Removes a profile from the user's friends list if the two profiles are friends
+     *
+     * @param profile profile to be removed
+     * @return true if the profile was successfully removed, false if the two users were not already friends
+     */
+    public boolean removeFriend(Profile profile) {
+        if (this.friendsList.contains(profile)) {
+            this.friendsList.remove(profile);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Gets the user's friend request list
+     * @return user's friend request list
+     */
+    public ArrayList<Profile> getFriendRequestList() {
+        return friendRequestList;
+    }
+
+    /**
+     * Adds a profile to the user's friend request list if the given profile does not already have a pending
+     * friend request
+     *
+     * @param profile profile to be added
+     * @return true if the friend request was successfully added, false if there was already a pending friend request
+     */
+    public boolean addFriendRequest(Profile profile) {
+        if (!this.friendRequestList.contains(profile)) {
+            this.friendRequestList.add(profile);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Removes a profile from the user's friend request list if the given profile has a pending
+     * friend request with the user
+     *
+     * @param profile profile to be removed
+     * @return true if the profile was successfully removed, false if there was not a pending friend request
+     */
+    public boolean removeFriendRequest(Profile profile) {
+        if (this.friendRequestList.contains(profile)) {
+            this.friendRequestList.remove(profile);
+            return true;
+        }
+        return false;
+    }
+}
