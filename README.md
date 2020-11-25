@@ -10,7 +10,6 @@ Roles:
 	 Austin Johnson (Client)
   Paul Kraessig?
   Nicholas Fang…? (flexible)
- 
  Backend:
   Jacob Zietek (Server)
   Patrick Florendo (Client)
@@ -18,10 +17,12 @@ Roles:
 ToDo's
  Client:
   //Insert todo's
+  
  Server:
   //Insert todo's
+  
  GUI:
-  //Insert todo's
+  I just finished creating the basic structure of the GUI. It has the menu bar, but overall, no functionality yet, but I wanted to get some sort of start of the GUI. - Austin
  
 Classes:
  Profile (Stores user information)
