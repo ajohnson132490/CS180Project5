@@ -13,6 +13,8 @@ import java.util.ArrayList;
  * https://stackoverflow.com/questions/13582395/sharing-a-variable-between-multiple-different-threads
  * https://mkyong.com/java/how-to-read-and-write-java-object-to-a-file/
  * Used parts of HW 11
+ * Client Server Protocol
+ * https://docs.google.com/document/d/1HkZXhTeCeuC6dR1nIDILRl5ete3qi1Vw8AO2i9qOdFU/edit
  *
  * @author Jacob Zietek | CS18000 Project 5 | Group 007-2
  * @version 25 November 2020
@@ -32,16 +34,17 @@ public class Server implements Runnable {
      * This function handles all of the interaction between server and client.
      * It is called once a client connects to the server.
      */
-    public void run() { // TODO
+    public void run() {
         while (true) {
             System.out.println("Client connected!");
             try {
                 // Starts reading and writing streams
-                BufferedReader reader = new BufferedReader(new InputStreamReader(csock.getInputStream()));
+                ObjectInputStream reader = new ObjectInputStream(csock.getInputStream());
                 ObjectOutputStream objectWriter = new ObjectOutputStream(csock.getOutputStream());
 
                 // Reads message from client
-                String message = reader.readLine();
+                // As per protocol, first message is a String
+                String message = (String) reader.readObject();
 
                 // If the message is null the client disconnected, close all streams.
                 if (message == null) {
@@ -51,18 +54,9 @@ public class Server implements Runnable {
                     return;
                 }
 
-                String messageToSend = "";
-
-                /*
-                    TODO Process data here & prep "messageToSend"
-                 */
-
-                // Sends data to client as needed.
-                objectWriter.writeObject(messageToSend);
-                objectWriter.flush();
+                handleMessage(reader, objectWriter, message);
 
             } catch (Exception e){
-                // Exception handling. TODO, throw exception errors
                 e.printStackTrace();
                 System.out.println("Error after client connected.");
                 return;
@@ -71,9 +65,48 @@ public class Server implements Runnable {
         }
     }
 
+    /**
+     *   Handles client requests synchronized to ensure that
+     *   betterBookProfiles list is updated correctly. All clients
+     *   access the list once the other is done with it. This ensures
+     *   modifications in the list don't mess with other user client
+     *   interaction.
+     *
+     *
+     *   @param message Message from client
+     */
+    public synchronized static void handleMessage(ObjectInputStream reader,
+            ObjectOutputStream objectWriter, String message){
+        try {
+            if (message.equals("receiveProfiles")) {
+                // Client is requesting profile list
+                for (Profile p: betterBookProfiles) {
+                    objectWriter.writeObject(p);
+                }
+                // Protocol states String "Goodbye" will end sending profiles
+                objectWriter.writeObject("Goodbye");
+                objectWriter.flush();
+            } else {
+                // Client is writing new profile list
+                ArrayList<Profile> newList = new ArrayList<>();
+                Object input = reader.readObject();
+                // Protocol states String "Goodbye" will end sending profiles
+                while(!(input instanceof String)) {
+                    newList.add((Profile) input);
+                    input = reader.readObject();
+                }
+                betterBookProfiles = newList;
+                // Saves new list to memory.
+                save("betterBookProfiles.txt");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         ServerSocket ssock = new ServerSocket(54234);
-        betterBookProfiles = new ArrayList<Profile>();
+        betterBookProfiles = new ArrayList<>();
         loadProfiles("betterBookProfiles.txt"); // Initializes synchronized profile list.
         System.out.println("Listening");
 
@@ -96,9 +129,14 @@ public class Server implements Runnable {
 
         // Loads every profile stored in memory to "betterBookProfiles"
         Profile p = (Profile) oi.readObject();
-        while(p != null){
-            betterBookProfiles.add(p);
-            p = (Profile) oi.readObject();
+        try {
+            while (p != null) {
+                betterBookProfiles.add(p);
+                p = (Profile) oi.readObject();
+            }
+        } catch (EOFException e){
+            e.printStackTrace();
+            return;
         }
     }
 
@@ -108,7 +146,7 @@ public class Server implements Runnable {
      *
      * @param fileName File name to save profiles to
      */
-    public void save(String fileName) throws IOException {
+    public static void save(String fileName) throws IOException {
         FileOutputStream f = new FileOutputStream(new File(fileName));
         ObjectOutputStream o = new ObjectOutputStream(f);
 
@@ -116,5 +154,4 @@ public class Server implements Runnable {
             o.writeObject(p);
         }
     }
-
 }
