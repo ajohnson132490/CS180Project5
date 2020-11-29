@@ -117,10 +117,6 @@ public class Server implements Runnable {
         }
     }
 
-
-
-
-
     /**
      * Loads serialized BetterBook profiles from a .txt file.
      *
@@ -133,9 +129,14 @@ public class Server implements Runnable {
 
         // Loads every profile stored in memory to "betterBookProfiles"
         Profile p = (Profile) oi.readObject();
-        while(p != null){
-            betterBookProfiles.add(p);
-            p = (Profile) oi.readObject();
+        try {
+            while (p != null) {
+                betterBookProfiles.add(p);
+                p = (Profile) oi.readObject();
+            }
+        } catch (EOFException e){
+            e.printStackTrace();
+            return;
         }
     }
 
@@ -153,5 +154,4 @@ public class Server implements Runnable {
             o.writeObject(p);
         }
     }
-
 }
