@@ -1,6 +1,8 @@
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import java.io.*;
+import java.net.UnknownHostException;
+
 import javax.swing.*;
 import javax.swing.border.*;
 
@@ -20,10 +22,10 @@ import javax.swing.border.*;
 public class GUI extends JComponent implements Runnable {
 	/* ALL VARIABLES */
 	private static final long serialVersionUID = -239376208864108143L; // Serial ID
-	// private Client client; //The shorthand name for the client
-	Profile profile;
-	private String hostname = ""; // The host name for the client to connect to
-	private int portNumber = 69420; // The port for the client to connect to
+	private Client client; // The shorthand name for the client
+	Profile profile; // The current users profile
+	private String hostname = "localhost"; // The host name for the client to connect to
+	private int portNumber = 4242; // The port for the client to connect to
 	GUI gui;
 
 	// Buttons
@@ -56,7 +58,14 @@ public class GUI extends JComponent implements Runnable {
 	/* MISC METHODS */
 	public GUI() {
 		// Creating a new client and passing it preset info to connect
-		// this.client = new Client(hostname, portNumber);
+		try {
+			// this.client = new Client(hostname, portNumber);
+		} catch (Exception e) {
+			;
+			JOptionPane.showMessageDialog(null, "There was an issue connecting to the server!", "ERROR",
+					JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		}
 	}
 
 	// Sending data to the client to send to the server
@@ -66,11 +75,15 @@ public class GUI extends JComponent implements Runnable {
 
 	/* ALL EVENT LISTENERS */
 	ActionListener actionListener = new ActionListener() {
-		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == signInButton) {
-				// Send entered username and password to client to check if the account exists
-				// If it does exist, then opens the profilePage.
+				try {
+					client.signIn(usernameField.getText(), passwordField.getText());
+				} catch (UserNotFoundError e1) {
+					JOptionPane.showMessageDialog(null, "Username or password is incorrect!\nPlease Try again!", "ERROR",
+							JOptionPane.ERROR_MESSAGE);
+					e1.printStackTrace();
+				}
 			}
 			if (e.getSource() == newAccountButton) {
 				newAccountPage();
@@ -81,10 +94,10 @@ public class GUI extends JComponent implements Runnable {
 				// point to one button
 			}
 			if (e.getSource() == addFriend) { // Change button?
-				//friendList();
+				// friendList();
 			}
 			if (e.getSource() == requestList) {
-				//requestList();
+				// requestList();
 			}
 		}
 	};
@@ -167,7 +180,6 @@ public class GUI extends JComponent implements Runnable {
 		createMenuBar(frame);
 		displayPersonalInfo(frame, c);
 
-
 		/// Making the frame visible
 		frame.setSize(800, 600);
 		frame.setLocationRelativeTo(null);
@@ -176,7 +188,7 @@ public class GUI extends JComponent implements Runnable {
 	}
 
 	/// Profile internal panels
-	//Menu Bar at the top
+	// Menu Bar at the top
 	public void createMenuBar(JFrame frame) {
 		JMenuBar menuBar = new JMenuBar();
 		// Account tab
@@ -185,36 +197,33 @@ public class GUI extends JComponent implements Runnable {
 		accountMenu.add(deleteAccount);
 		accountMenu.add(requestList);
 		menuBar.add(accountMenu);
-		
-		//Add Space so that the search Bar is on the left side
+
+		// Add Space so that the search Bar is on the left side
 		menuBar.add(Box.createHorizontalGlue());
 
-		///Adding the friend Search Bar
-		//Text field
+		/// Adding the friend Search Bar
+		// Text field
 		GridBagConstraints c = new GridBagConstraints();
 		searchField.setPreferredSize(new Dimension(200, 30));
-		searchField.setMaximumSize( searchField.getPreferredSize());
+		searchField.setMaximumSize(searchField.getPreferredSize());
 		c.gridx = GridBagConstraints.LINE_END - 2;
 		c.gridy = 0;
 		menuBar.add(searchField, c);
-		
-		//Button
+
+		// Button
 		c.gridx = GridBagConstraints.LINE_END;
 		c.gridy = 0;
 		menuBar.add(searchButton, c);
-		
-		//Adding the menuBar to the profile Page
+
+		// Adding the menuBar to the profile Page
 		frame.setJMenuBar(menuBar);
 	}
 
-	//Personal info at the upper left corner
+	// Personal info at the upper left corner
 	public void displayPersonalInfo(JFrame frame, GridBagConstraints c) {
 		// Creating the Info Box
 		JPanel info = new JPanel();
 		info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
-
-		// Getting the info from the profile
-		profile = new Profile("AJohnson132490", "Lets", "Austin", "6841 Tadpole Ct"); // Temp profile
 
 		username = new JLabel(profile.getUsername());
 		username.setBorder(new EmptyBorder(0, 0, 15, 0));
@@ -251,8 +260,16 @@ public class GUI extends JComponent implements Runnable {
 		// Showing the panel
 		frame.add(info, c);
 		info.setVisible(true);
-		//Delete this line
+		// Delete this line
 		info.setBackground(Color.red);
+		
+		
+		//Creating friend box
+		JPanel friendPanel = new JPanel();
+		friendPanel.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
+		
+		
+
 	}
 
 	public void run() {
