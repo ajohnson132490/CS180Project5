@@ -105,7 +105,7 @@ public class Server implements Runnable {
     }
 
     public static void main(String[] args) throws Exception {
-        ServerSocket ssock = new ServerSocket(54234);
+        ServerSocket ssock = new ServerSocket(4242);
         betterBookProfiles = new ArrayList<>();
         loadProfiles("betterBookProfiles.txt"); // Initializes synchronized profile list.
         System.out.println("Listening");
