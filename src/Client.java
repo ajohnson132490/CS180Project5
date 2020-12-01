@@ -105,7 +105,7 @@ public class Client {
      * @param name        The Profile's name
      * @param contactInfo The Profile's contact info
      */
-    //TODO: Password requirements
+    //TODO: Username/Password requirements?
     public void createProfile(String userName, String pass, String name, String contactInfo) {
         receiveProfiles();
         Profile p = new Profile(userName, pass, name, contactInfo);
@@ -158,5 +158,27 @@ public class Client {
             }
         }
         return -1;
+    }
+
+    /**
+     * Returns the profile with matching username and password
+     *
+     * @param username The user being logged into
+     * @param password The password to the user being logged into
+     * @return The profile with matching username and password
+     * @throws UserNotFoundError Thrown if no user has a matching username or passwords don't match
+     */
+    public Profile signIn(String username, String password) throws UserNotFoundError {
+        for (Profile p : betterBookProfiles) {
+            if (p.getUsername().equals(username)) {
+                if (p.getPassword().equals(password)) {
+                    return p;
+                } else {
+                    // Passwords didn't match
+                    throw new UserNotFoundError("Passwords don't match!");
+                }
+            }
+        }
+        throw new UserNotFoundError("User not found!");
     }
 }
