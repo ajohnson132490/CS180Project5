@@ -1,7 +1,6 @@
 import java.net.Socket;
 import java.util.ArrayList;
 
-import static org.junit.Assert.*;
 /**
  * A class to test Server and all of its
  * methods using JUnit4.
