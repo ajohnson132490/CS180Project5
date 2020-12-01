@@ -28,7 +28,7 @@ public class GUI extends JComponent implements Runnable {
 	private int portNumber = 4242; // The port for the client to connect to
 	private boolean successfulLogin = false;
 	GUI gui;
-
+	
 	// Buttons
 	JButton deleteFriend = new JButton("-");
 	JButton signInButton = new JButton("Sign In");
@@ -36,7 +36,7 @@ public class GUI extends JComponent implements Runnable {
 	JButton registerButton = new JButton("Register");
 	JButton searchButton = new JButton("Search");
 	JButton confirmButton = new JButton("Confirm");
-
+	
 	// Menu Bar
 	JMenu accountMenu = new JMenu("Account");
 	JMenuItem createAccount = new JMenuItem("Create a new account");
@@ -44,7 +44,7 @@ public class GUI extends JComponent implements Runnable {
 	JMenuItem deleteAccount = new JMenuItem("Delete your account");
 	JMenuItem requestList = new JMenuItem("Friend Requests");
 	JMenu addFriend = new JMenu("+");
-
+	
 	// Text fields
 	JTextField usernameField = new JTextField("Username");
 	JTextField passwordField = new JTextField("Password");
@@ -52,14 +52,14 @@ public class GUI extends JComponent implements Runnable {
 	JTextField nameField = new JTextField("Name");
 	JTextField contactInformationField = new JTextField("Email or Phone #");
 	JTextField searchField = new JTextField("Enter a Username:");
-
+	
 	// Labels
 	JLabel username;
 	JLabel name;
 	JLabel contactInformation;
 	JLabel aboutMe;
 	JLabel privacySetting;
-
+	
 	/* CONSTRUCTOR  */
 	public GUI() {
 		// Creating a new client and passing it preset info to connect
@@ -67,7 +67,6 @@ public class GUI extends JComponent implements Runnable {
 			// this.client = new Client(hostname, portNumber);
 			profile = new Profile("AJohnson132490", "Lets", "Austin", "6841 Tadpole Ct");
 		} catch (Exception e) {
-			;
 			JOptionPane.showMessageDialog(null, "There was an issue connecting to the server!", "ERROR",
 					JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
@@ -126,59 +125,59 @@ public class GUI extends JComponent implements Runnable {
 		}
 	};
 	
-
+	
 	/* ALL PAGES */
 	// The JFrame where you sign in
 	public void signInPage() {
 		JFrame frame = new JFrame("Sign In");
 		frame.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
-
+		
 		usernameField.setPreferredSize(new Dimension(200, 30));
 		c.gridx = 0;
 		c.gridy = 0;
 		frame.add(usernameField, c);
-
+		
 		passwordField.setPreferredSize(new Dimension(200, 30));
 		c.insets = new Insets(10, 0, 0, 0);
 		c.gridx = 0;
 		c.gridy = 2;
 		frame.add(passwordField, c);
-
+		
 		c.gridx = 0;
 		c.gridy = 4;
 		signInButton.addActionListener(actionListener);
 		frame.add(signInButton, c);
-
+		
 		c.gridx = 0;
 		c.gridy = 5;
 		newAccountButton.addActionListener(actionListener);
 		frame.add(newAccountButton, c);
-
+		
 		// Making the frame visible
 		frame.setSize(300, 200);
 		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setVisible(true);
 	}
-
+	
 	// The JFrame that appears when registerButton is clicked in order for the user
 	// to create a new account
 	public void newAccountPage() {
 		JFrame frame = new JFrame("Create a New Account");
 		frame.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
-
+		
 		usernameField.setPreferredSize(new Dimension(200, 30));
 		c.gridx = 0;
 		c.gridy = 0;
 		frame.add(usernameField, c);
-
+		
 		passwordField.setPreferredSize(new Dimension(200, 30));
 		c.insets = new Insets(10, 0, 0, 0);
 		c.gridy = 2;
 		frame.add(passwordField, c);
-
+		
 		verifyPassword.setPreferredSize(new Dimension(200, 30));
 		c.gridy = 4;
 		frame.add(verifyPassword, c);
@@ -190,7 +189,7 @@ public class GUI extends JComponent implements Runnable {
 		contactInformationField.setPreferredSize(new Dimension(200, 30));
 		c.gridy = 8;
 		frame.add(contactInformationField, c);
-
+		
 		c.gridx = 0;
 		c.gridy = 10;
 		registerButton.addActionListener(actionListener);
@@ -199,15 +198,15 @@ public class GUI extends JComponent implements Runnable {
 			frame.dispose();
 		});
 		
-
+		
 		// Making the frame visible
 		frame.setSize(300, 400);
 		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setVisible(true);
 		
 	}
-
+	
 	//Allows users to edit their account
 	public void editAccountPage() {
 		JFrame frame = new JFrame("Edit Your Account");
@@ -219,7 +218,7 @@ public class GUI extends JComponent implements Runnable {
 		usernameField.setEditable(false);
 		c.gridx = 0;
 		c.gridy = 0;
-
+		
 		frame.add(usernameField, c);
 		
 		passwordField.setPreferredSize(new Dimension(200, 30));
@@ -252,7 +251,7 @@ public class GUI extends JComponent implements Runnable {
 		// Making the frame visible
 		frame.setSize(300, 400);
 		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setVisible(true);
 		
 	}
@@ -269,17 +268,17 @@ public class GUI extends JComponent implements Runnable {
 				GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
 		gui = new GUI();
 		frame.add(gui, c);
-
+		
 		createMenuBar(frame);
-		displayPersonalInfo(frame, c);
-
+		displayAllInformation(frame, c);
+		
 		/// Making the frame visible
 		frame.setSize(800, 600);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
-
+	
 	/// Profile internal panels
 	// Menu Bar at the top
 	public void createMenuBar(JFrame frame) {
@@ -290,14 +289,33 @@ public class GUI extends JComponent implements Runnable {
 		accountMenu.add(editAccount);
 		editAccount.addActionListener(menuBarListener);
 		accountMenu.add(deleteAccount);
-		deleteAccount.addActionListener(menuBarListener);
+		deleteAccount.addActionListener(e -> {
+			
+			if (e.getSource() == deleteAccount) {
+				int selection = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete your account?\n"
+								+ "This operation cannot be reversed!", "We're sorry to see you go...",
+						JOptionPane.YES_NO_OPTION);
+				if (selection == JOptionPane.YES_OPTION) {
+					signInPage();
+					frame.dispose();
+					try {
+						client.deleteProfile(profile);
+					} catch (NullPointerException e1) {
+						System.out.println("Null pointer on account delete. Still Runs.");
+					}
+				} else if (selection == JOptionPane.NO_OPTION) {
+					frame.dispose();
+				}
+			}
+			
+		});
 		accountMenu.add(requestList);
 		requestList.addActionListener(menuBarListener);
 		menuBar.add(accountMenu);
-
+		
 		// Add Space so that the search Bar is on the left side
 		menuBar.add(Box.createHorizontalGlue());
-
+		
 		/// Adding the friend Search Bar
 		// Text field
 		GridBagConstraints c = new GridBagConstraints();
@@ -306,23 +324,30 @@ public class GUI extends JComponent implements Runnable {
 		c.gridx = GridBagConstraints.LINE_END - 2;
 		c.gridy = 0;
 		menuBar.add(searchField, c);
-
+		
 		// Button
 		c.gridx = GridBagConstraints.LINE_END;
 		c.gridy = 0;
 		menuBar.add(searchButton, c);
-
+		
 		// Adding the menuBar to the profile Page
 		frame.setJMenuBar(menuBar);
 	}
-
-	// Personal info at the upper left corner
-	public void displayPersonalInfo(JFrame frame, GridBagConstraints c) {
+	
+	// Profile Page objects
+	public void displayAllInformation(JFrame frame, GridBagConstraints c) {
+		displayUserInformation(frame, c);
+		displayUserFriendList(frame, c);
+		displayUserInterestList(frame, c);
+	}
+	
+	//Shows all personal information in top left corner
+	public void displayUserInformation(JFrame frame, GridBagConstraints c) {
 		//Creating info buffer for precise location
 		JPanel infoBuffer = new JPanel();
 		infoBuffer.setLayout(new BoxLayout(infoBuffer, BoxLayout.Y_AXIS));
 		infoBuffer.setBorder(new EmptyBorder(25, 25, 0, 0));
-
+		
 		// Creating the Info Box
 		JPanel info = new JPanel();
 		info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
@@ -330,29 +355,29 @@ public class GUI extends JComponent implements Runnable {
 		info.setMinimumSize(new Dimension(450, 200));
 		info.setSize(new Dimension(450, 200));
 		infoBuffer.add(info);
-
+		
 		username = new JLabel("Username: " + profile.getUsername());
 		username.setBorder(new EmptyBorder(0, 0, 15, 0));
 		username.setFont(new Font("Verdana", Font.PLAIN, 18));
-
+		
 		name = new JLabel("Name: " + profile.getName());
 		name.setBorder(new EmptyBorder(0, 0, 15, 0));
 		name.setFont(new Font("Verdana", Font.PLAIN, 18));
-
+		
 		contactInformation = new JLabel("Contact Info:" + profile.getContactInformation());
 		contactInformation.setBorder(new EmptyBorder(0, 0, 15, 0));
 		contactInformation.setFont(new Font("Verdana", Font.PLAIN, 18));
-
+		
 		if (!profile.getAboutMe().equals("")) {
 			aboutMe = new JLabel(profile.getAboutMe());
 			aboutMe.setBorder(new EmptyBorder(0, 0, 15, 0));
 			aboutMe.setFont(new Font("Verdana", Font.PLAIN, 18));
 		}
-
+		
 		privacySetting = new JLabel("Curret Privacy Setting: " + profile.getPrivacySetting());
 		privacySetting.setBorder(new EmptyBorder(0, 0, 0, 0));
 		privacySetting.setFont(new Font("Verdana", Font.PLAIN, 18));
-
+		
 		/// Adding information
 		// The Glue puts space between the lines
 		info.add(username);
@@ -364,23 +389,26 @@ public class GUI extends JComponent implements Runnable {
 		try {
 			info.add(aboutMe);
 		} catch (NullPointerException e) {
-
+		
 		}
 		info.add(Box.createGlue());
 		info.add(privacySetting);
-
+		
 		// Showing the panel
 		c.gridx = 0;
 		frame.add(infoBuffer, c);
 		info.setVisible(true);
 		// Delete this line
 		info.setBackground(Color.red);
-		
+	}
+	
+	//Shows users friend list in top right corner
+	public void displayUserFriendList(JFrame frame, GridBagConstraints c) {
 		//Creating friend buffer for precise position
 		JPanel friendPanelBuffer = new JPanel();
 		friendPanelBuffer.setLayout(new BoxLayout(friendPanelBuffer, BoxLayout.Y_AXIS));
 		friendPanelBuffer.setBorder(new EmptyBorder(25, 25, 0, 25));
-
+		
 		//Creating the friend Panel
 		JPanel internalFriendPanel = new JPanel();
 		internalFriendPanel.setLayout(new BoxLayout(internalFriendPanel, BoxLayout.Y_AXIS));
@@ -388,7 +416,7 @@ public class GUI extends JComponent implements Runnable {
 		internalFriendPanel.setMinimumSize(new Dimension(250, 100));
 		friendPanelBuffer.add(internalFriendPanel);
 		ArrayList <Profile> friends = profile.getFriendsList();
-
+		
 		//Default action if no friends exist
 		if (friends.size() >= 0) {
 			JLabel emptyFriendList = new JLabel("<html>To add friends, search a username in the top search bar!</html>");
@@ -410,7 +438,52 @@ public class GUI extends JComponent implements Runnable {
 		internalFriendPanel.setVisible(true);
 		internalFriendPanel.setBackground(Color.cyan);
 	}
-
+	
+	//Shows user interest list in bottom left corner
+	public void displayUserInterestList(JFrame frame, GridBagConstraints c) {
+		//Creating a buffer for the interests panel
+		JPanel interestsBuffer = new JPanel();
+		interestsBuffer.setLayout(new BoxLayout(interestsBuffer, BoxLayout.Y_AXIS));
+		interestsBuffer.setBorder(new EmptyBorder(0, 25, 0, 25));
+		
+		//Creating the interest Panel
+		JPanel interestsPanel = new JPanel();
+		JLabel interestsTitle = new JLabel("<html>Likes and Interests:</html>");
+		interestsTitle.setFont(new Font("Verdana", Font.PLAIN, 16));
+		interestsTitle.setBorder(new EmptyBorder(15,15,15,15));
+		interestsPanel.add(interestsTitle);
+		interestsPanel.setLayout(new BoxLayout(interestsPanel, BoxLayout.Y_AXIS));
+		interestsPanel.setBorder(new EmptyBorder(15, 50, 15, 50));
+		interestsPanel.setMinimumSize(new Dimension(300, 200));
+		interestsPanel.setMaximumSize(new Dimension(300, 200));
+		
+		interestsBuffer.add(interestsPanel);
+		ArrayList <String> interests = profile.getLikesAndInterests();
+		
+		//Default action if no friends exist
+		if (interests.size() >= 0) {
+			JButton emptyInterestsList = new JButton("Add likes and interests");
+			emptyInterestsList.setBorder(new EmptyBorder(15, 15, 15, 15));
+			emptyInterestsList.setFont(new Font("Verdana", Font.PLAIN, 15));
+			interestsPanel.add(emptyInterestsList);
+			interestsPanel.setBorder(new EmptyBorder(15, 50, 15, 50));
+		} else {
+			//Adding any friends that have accepted the friend request
+			for (String i: profile.getLikesAndInterests()) {
+				JLabel currentInterest = new JLabel(i);
+				currentInterest.setBorder(new EmptyBorder(0, 0, 15, 0));
+				currentInterest.setFont(new Font("Verdana", Font.PLAIN, 15));
+				interestsPanel.add(currentInterest);
+			}
+		}
+		//Adding the friend buffer and panel to the display at gridx 1 gridy 0
+		c.gridx = 0;
+		c.gridy = -1;
+		frame.add(interestsBuffer, c);
+		interestsPanel.setVisible(true);
+		interestsPanel.setBackground(Color.orange);
+	}
+	
 	public void run() {
 		// Running the sign in page
 		//signInPage();
@@ -419,9 +492,9 @@ public class GUI extends JComponent implements Runnable {
 		if (successfulLogin == false) {
 			profilePage();
 		}
-
+		
 	}
-
+	
 	public static void main(String[] args) {
 		// Running the GUI
 		SwingUtilities.invokeLater(new GUI());
