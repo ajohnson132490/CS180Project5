@@ -68,6 +68,15 @@ public class Profile implements Serializable {
     }
 
     /**
+     * Gets the profile's password
+     *
+     * @return profile's password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
      * Sets the profile's password
      *
      * @param password password to be set
@@ -226,6 +235,7 @@ public class Profile implements Serializable {
 
     /**
      * Gets the user's bio
+     *
      * @return the user's bio
      */
     public String getAboutMe() {
@@ -234,9 +244,28 @@ public class Profile implements Serializable {
 
     /**
      * Sets the user's bio
+     *
      * @param aboutMe bio to be set
      */
     public void setAboutMe(String aboutMe) {
         this.aboutMe = aboutMe;
+    }
+
+    /**
+     * returns true if matching username, password, contact info, and name
+     *
+     * @param o The object to compare against
+     * @return true if o contains the same data
+     */
+    public boolean equals(Object o) {
+        if (!(o instanceof Profile)) {
+            return false;
+        }
+
+        Profile p = (Profile) o;
+        return p.getUsername().equals(getUsername()) &&
+                p.getPassword().equals(getPassword()) &&
+                p.getContactInformation().equals(getContactInformation()) &&
+                p.getName().equals(getName());
     }
 }
