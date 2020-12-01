@@ -12,7 +12,7 @@ import java.util.*;
  * @author Patrick Florendo | CS18000 Project 5 | Group 007-2
  * @version 26 November 2020
  */
-public class Client implements Runnable {
+public class Client {
     ArrayList<Profile> betterBookProfiles;
     private Socket sock;
     BufferedReader reader;
@@ -28,7 +28,18 @@ public class Client implements Runnable {
 
     //TODO: implement functions for messages sent/received to/from server
     //Not actually sure if this needs a run method tbh
-    public void run() {
+    
+    //All client stuff will run in the main method, no run method is needed - Austin
+    
+    public Profile signIn(String username, String password) throws UserNotFoundError {
+    	//TODO Check users sign in information against the database, 
+    	//Then return a profile that matches the username and password
+    	//Throw user not found error if you can't find a profile to match
+    	//I'll handle the exception - Austin
+    	return new Profile("AJohnson132490", "Lets", "Austin", "6841 Tadpole Ct");
+    }
+    
+    public static void main(String[] args) {
         while (true) {
             //"disconnect" (disconnects from server)
 
