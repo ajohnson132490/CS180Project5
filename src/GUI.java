@@ -35,6 +35,7 @@ public class GUI extends JComponent implements Runnable {
 	JButton newAccountButton = new JButton("Create a New Account");
 	JButton registerButton = new JButton("Register");
 	JButton searchButton = new JButton("Search");
+	JButton confirmButton = new JButton("Confirm");
 
 	// Menu Bar
 	JMenu accountMenu = new JMenu("Account");
@@ -113,6 +114,14 @@ public class GUI extends JComponent implements Runnable {
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == createAccount) {
 				newAccountPage();
+			}
+			if (e.getSource() == editAccount) {
+				editAccountPage();
+			}
+			if (e.getSource() == confirmButton) {
+				Profile newProfile = new Profile(usernameField.getText(), passwordField.getText(),
+						nameField.getText(), contactInformationField.getText());
+				client.updateProfile(profile, newProfile);
 			}
 		}
 	};
@@ -199,6 +208,56 @@ public class GUI extends JComponent implements Runnable {
 		
 	}
 
+	//Allows users to edit their account
+	public void editAccountPage() {
+		JFrame frame = new JFrame("Edit Your Account");
+		frame.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		
+		usernameField.setPreferredSize(new Dimension(200, 30));
+		usernameField.setText(profile.getUsername());
+		usernameField.setEditable(false);
+		c.gridx = 0;
+		c.gridy = 0;
+
+		frame.add(usernameField, c);
+		
+		passwordField.setPreferredSize(new Dimension(200, 30));
+		c.insets = new Insets(10, 0, 0, 0);
+		c.gridy = 2;
+		frame.add(passwordField, c);
+		
+		verifyPassword.setPreferredSize(new Dimension(200, 30));
+		c.gridy = 4;
+		frame.add(verifyPassword, c);
+		
+		nameField.setPreferredSize(new Dimension(200, 30));
+		c.gridy = 6;
+		frame.add(nameField, c);
+		
+		contactInformationField.setPreferredSize(new Dimension(200, 30));
+		c.gridy = 8;
+		frame.add(contactInformationField, c);
+		
+		c.gridx = 0;
+		c.gridy = 10;
+		confirmButton.addActionListener(menuBarListener);
+		frame.add(confirmButton, c);
+		confirmButton.addActionListener(e -> {
+			usernameField.setEditable(true);
+			frame.dispose();
+		});
+		
+		
+		// Making the frame visible
+		frame.setSize(300, 400);
+		frame.setLocationRelativeTo(null);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+		
+	}
+	
+	//This page is the main screen with all the users information
 	public void profilePage() {
 		// Creating the frame
 		JFrame frame = new JFrame("BetterBook");
@@ -229,8 +288,11 @@ public class GUI extends JComponent implements Runnable {
 		accountMenu.add(createAccount);
 		createAccount.addActionListener(menuBarListener);
 		accountMenu.add(editAccount);
+		editAccount.addActionListener(menuBarListener);
 		accountMenu.add(deleteAccount);
+		deleteAccount.addActionListener(menuBarListener);
 		accountMenu.add(requestList);
+		requestList.addActionListener(menuBarListener);
 		menuBar.add(accountMenu);
 
 		// Add Space so that the search Bar is on the left side

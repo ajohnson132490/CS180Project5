@@ -37,6 +37,7 @@ public class Client {
         // the gui to use. Don't forget to make sure that the username and password adhere to any conventions that
         // you want, like no spaces, or must have a capital, ect. -Austin
         return new Profile(username, password, name, contactInformation);
+    }
     /**
      * Disconnects from server and closes reader and writer
      */

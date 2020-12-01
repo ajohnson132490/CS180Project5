@@ -124,7 +124,7 @@ public class Server implements Runnable {
      * @param fileName File name to load profiles from
      */
     public static void loadProfiles(String fileName) throws IOException, ClassNotFoundException {
-        FileInputStream fi = new FileInputStream(new File(fileName));
+        FileInputStream fi = new FileInputStream(fileName);
         ObjectInputStream oi = new ObjectInputStream(fi);
 
         // Loads every profile stored in memory to "betterBookProfiles"
