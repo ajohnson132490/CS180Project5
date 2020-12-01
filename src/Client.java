@@ -32,6 +32,11 @@ public class Client {
         writer = new PrintWriter(sock.getOutputStream());
     }
 
+    public Profile createUser(String username, String password, String name, String contactInformation) {
+        //TODO given this information, create a new user, add it to the database, then return the profile object for
+        // the gui to use. Don't forget to make sure that the username and password adhere to any conventions that
+        // you want, like no spaces, or must have a capital, ect. -Austin
+        return new Profile(username, password, name, contactInformation);
     /**
      * Disconnects from server and closes reader and writer
      */
