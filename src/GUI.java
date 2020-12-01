@@ -2,7 +2,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.UnknownHostException;
-
+import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
 
@@ -26,6 +26,7 @@ public class GUI extends JComponent implements Runnable {
 	Profile profile; // The current users profile
 	private String hostname = "localhost"; // The host name for the client to connect to
 	private int portNumber = 4242; // The port for the client to connect to
+	private boolean successfulLogin = false;
 	GUI gui;
 
 	// Buttons
@@ -46,6 +47,9 @@ public class GUI extends JComponent implements Runnable {
 	// Text fields
 	JTextField usernameField = new JTextField("Username");
 	JTextField passwordField = new JTextField("Password");
+	JTextField verifyPassword = new JTextField("Verify Password");
+	JTextField nameField = new JTextField("Name");
+	JTextField contactInformationField = new JTextField("Email or Phone #");
 	JTextField searchField = new JTextField("Enter a Username:");
 
 	// Labels
@@ -55,11 +59,12 @@ public class GUI extends JComponent implements Runnable {
 	JLabel aboutMe;
 	JLabel privacySetting;
 
-	/* MISC METHODS */
+	/* CONSTRUCTOR  */
 	public GUI() {
 		// Creating a new client and passing it preset info to connect
 		try {
 			// this.client = new Client(hostname, portNumber);
+			profile = new Profile("AJohnson132490", "Lets", "Austin", "6841 Tadpole Ct");
 		} catch (Exception e) {
 			;
 			JOptionPane.showMessageDialog(null, "There was an issue connecting to the server!", "ERROR",
@@ -67,18 +72,14 @@ public class GUI extends JComponent implements Runnable {
 			e.printStackTrace();
 		}
 	}
-
-	// Sending data to the client to send to the server
-	public void sendToServer(Object o) {
-		// c.sendToServer(o);
-	}
-
+	
 	/* ALL EVENT LISTENERS */
 	ActionListener actionListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == signInButton) {
 				try {
-					client.signIn(usernameField.getText(), passwordField.getText());
+					profile = client.signIn(usernameField.getText(), passwordField.getText());
+					successfulLogin = true;
 				} catch (UserNotFoundError e1) {
 					JOptionPane.showMessageDialog(null, "Username or password is incorrect!\nPlease Try again!", "ERROR",
 							JOptionPane.ERROR_MESSAGE);
@@ -89,9 +90,16 @@ public class GUI extends JComponent implements Runnable {
 				newAccountPage();
 			}
 			if (e.getSource() == registerButton) {
-				// Basically the same implementation as signInButton
-				// I'm wondering if there is a way we could simplify this and just have both
-				// point to one button
+				if (passwordField.getText().equals(verifyPassword.getText())) {
+					//profile = new Profile(client.createUser(usernameField.getText(), passwordField.getText(),
+					// nameField.getText(), contactInformationField.getText()));
+					signInPage();
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "Passwords do not match!", "ERROR",
+							JOptionPane.INFORMATION_MESSAGE);
+				}
+				
 			}
 			if (e.getSource() == addFriend) { // Change button?
 				// friendList();
@@ -101,6 +109,14 @@ public class GUI extends JComponent implements Runnable {
 			}
 		}
 	};
+	ActionListener menuBarListener = new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			if (e.getSource() == createAccount) {
+				newAccountPage();
+			}
+		}
+	};
+	
 
 	/* ALL PAGES */
 	// The JFrame where you sign in
@@ -151,25 +167,43 @@ public class GUI extends JComponent implements Runnable {
 
 		passwordField.setPreferredSize(new Dimension(200, 30));
 		c.insets = new Insets(10, 0, 0, 0);
-		c.gridx = 0;
 		c.gridy = 2;
 		frame.add(passwordField, c);
 
-		c.gridx = 0;
+		verifyPassword.setPreferredSize(new Dimension(200, 30));
 		c.gridy = 4;
+		frame.add(verifyPassword, c);
+		
+		nameField.setPreferredSize(new Dimension(200, 30));
+		c.gridy = 6;
+		frame.add(nameField, c);
+		
+		contactInformationField.setPreferredSize(new Dimension(200, 30));
+		c.gridy = 8;
+		frame.add(contactInformationField, c);
+
+		c.gridx = 0;
+		c.gridy = 10;
 		registerButton.addActionListener(actionListener);
 		frame.add(registerButton, c);
+		registerButton.addActionListener(e -> {
+			frame.dispose();
+		});
+		
 
 		// Making the frame visible
-		frame.setSize(300, 200);
+		frame.setSize(300, 400);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
+		
 	}
 
 	public void profilePage() {
 		// Creating the frame
 		JFrame frame = new JFrame("BetterBook");
+		frame.setResizable(false);
+		//frame.setUndecorated(true); This line makes the program borderless. It's nice but not good for testing
 		Container content = frame.getContentPane();
 		content.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints(5, 5, 1, 1, 1.0, 1.0, GridBagConstraints.NORTHWEST,
@@ -193,6 +227,7 @@ public class GUI extends JComponent implements Runnable {
 		JMenuBar menuBar = new JMenuBar();
 		// Account tab
 		accountMenu.add(createAccount);
+		createAccount.addActionListener(menuBarListener);
 		accountMenu.add(editAccount);
 		accountMenu.add(deleteAccount);
 		accountMenu.add(requestList);
@@ -221,25 +256,36 @@ public class GUI extends JComponent implements Runnable {
 
 	// Personal info at the upper left corner
 	public void displayPersonalInfo(JFrame frame, GridBagConstraints c) {
+		//Creating info buffer for precise location
+		JPanel infoBuffer = new JPanel();
+		infoBuffer.setLayout(new BoxLayout(infoBuffer, BoxLayout.Y_AXIS));
+		infoBuffer.setBorder(new EmptyBorder(25, 25, 0, 0));
+
 		// Creating the Info Box
 		JPanel info = new JPanel();
 		info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
+		info.setBorder(new EmptyBorder(15,15,15,15));
+		info.setMinimumSize(new Dimension(450, 200));
+		info.setSize(new Dimension(450, 200));
+		infoBuffer.add(info);
 
-		username = new JLabel(profile.getUsername());
+		username = new JLabel("Username: " + profile.getUsername());
 		username.setBorder(new EmptyBorder(0, 0, 15, 0));
 		username.setFont(new Font("Verdana", Font.PLAIN, 18));
 
-		name = new JLabel(profile.getName());
+		name = new JLabel("Name: " + profile.getName());
 		name.setBorder(new EmptyBorder(0, 0, 15, 0));
 		name.setFont(new Font("Verdana", Font.PLAIN, 18));
 
-		contactInformation = new JLabel(profile.getContactInformation());
+		contactInformation = new JLabel("Contact Info:" + profile.getContactInformation());
 		contactInformation.setBorder(new EmptyBorder(0, 0, 15, 0));
 		contactInformation.setFont(new Font("Verdana", Font.PLAIN, 18));
 
-		aboutMe = new JLabel(profile.getAboutMe());
-		aboutMe.setBorder(new EmptyBorder(0, 0, 15, 0));
-		aboutMe.setFont(new Font("Verdana", Font.PLAIN, 18));
+		if (!profile.getAboutMe().equals("")) {
+			aboutMe = new JLabel(profile.getAboutMe());
+			aboutMe.setBorder(new EmptyBorder(0, 0, 15, 0));
+			aboutMe.setFont(new Font("Verdana", Font.PLAIN, 18));
+		}
 
 		privacySetting = new JLabel("Curret Privacy Setting: " + profile.getPrivacySetting());
 		privacySetting.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -253,37 +299,65 @@ public class GUI extends JComponent implements Runnable {
 		info.add(Box.createGlue());
 		info.add(contactInformation);
 		info.add(Box.createGlue());
-		info.add(aboutMe);
+		try {
+			info.add(aboutMe);
+		} catch (NullPointerException e) {
+
+		}
 		info.add(Box.createGlue());
 		info.add(privacySetting);
 
 		// Showing the panel
-		frame.add(info, c);
+		c.gridx = 0;
+		frame.add(infoBuffer, c);
 		info.setVisible(true);
 		// Delete this line
 		info.setBackground(Color.red);
 		
-		
-		//Creating friend box
-		JPanel friendPanel = new JPanel();
-		friendPanel.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
-		
-		
+		//Creating friend buffer for precise position
+		JPanel friendPanelBuffer = new JPanel();
+		friendPanelBuffer.setLayout(new BoxLayout(friendPanelBuffer, BoxLayout.Y_AXIS));
+		friendPanelBuffer.setBorder(new EmptyBorder(25, 25, 0, 25));
 
+		//Creating the friend Panel
+		JPanel internalFriendPanel = new JPanel();
+		internalFriendPanel.setLayout(new BoxLayout(internalFriendPanel, BoxLayout.Y_AXIS));
+		internalFriendPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
+		internalFriendPanel.setMinimumSize(new Dimension(250, 100));
+		friendPanelBuffer.add(internalFriendPanel);
+		ArrayList <Profile> friends = profile.getFriendsList();
+
+		//Default action if no friends exist
+		if (friends.size() >= 0) {
+			JLabel emptyFriendList = new JLabel("<html>To add friends, search a username in the top search bar!</html>");
+			emptyFriendList.setBorder(new EmptyBorder(0, 0, 15, 0));
+			emptyFriendList.setFont(new Font("Verdana", Font.PLAIN, 15));
+			internalFriendPanel.add(emptyFriendList);
+		} else {
+			//Adding any friends that have accepted the friend request
+			for (Profile f: profile.getFriendsList()) {
+				JLabel currentFriend = new JLabel(f.getUsername());
+				currentFriend.setBorder(new EmptyBorder(0, 0, 15, 0));
+				currentFriend.setFont(new Font("Verdana", Font.PLAIN, 15));
+				internalFriendPanel.add(currentFriend);
+			}
+		}
+		//Adding the friend buffer and panel to the display at gridx 1 gridy 0
+		c.gridx = 1;
+		frame.add(friendPanelBuffer, c);
+		internalFriendPanel.setVisible(true);
+		internalFriendPanel.setBackground(Color.cyan);
 	}
 
 	public void run() {
 		// Running the sign in page
-		signInPage();
-
-		try {
-			if (/* !profile.getUsername().equals(null) */ true) {
-				// Running the profile page
-				profilePage();
-			}
-		} catch (NullPointerException e) {
-			System.out.println("You are not signed in");
+		//signInPage();
+		
+		//== false will be removed once client is done
+		if (successfulLogin == false) {
+			profilePage();
 		}
+
 	}
 
 	public static void main(String[] args) {
