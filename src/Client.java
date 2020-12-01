@@ -32,11 +32,18 @@ public class Client {
     //All client stuff will run in the main method, no run method is needed - Austin
     
     public Profile signIn(String username, String password) throws UserNotFoundError {
-    	//TODO Check users sign in information against the database, 
+    	//TODO Check users sign in information against the database,
     	//Then return a profile that matches the username and password
     	//Throw user not found error if you can't find a profile to match
     	//I'll handle the exception - Austin
-    	return new Profile("AJohnson132490", "Lets", "Austin", "6841 Tadpole Ct");
+    	return new Profile("AJohnson132490", "Lets", "Austin", "john2761@purdue.edu");
+    }
+    
+    public Profile createUser(String username, String password, String name, String contactInformation) {
+        //TODO given this information, create a new user, add it to the database, then return the profile object for
+        // the gui to use. Don't forget to make sure that the username and password adhere to any conventions that
+        // you want, like no spaces, or must have a capital, ect. -Austin
+        return new Profile(username, password, name, contactInformation);
     }
     
     public static void main(String[] args) {
