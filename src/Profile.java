@@ -50,6 +50,22 @@ public class Profile implements Serializable {
     }
 
     /**
+     * Copy consturctor for a Profile object
+     * @param toCopy Profile object to be copied
+     */
+    public Profile (Profile toCopy) {
+        this.username = toCopy.getName();
+        this.password = toCopy.getPassword();
+        this.name = toCopy.getName();
+        this.contactInformation = toCopy.getContactInformation();
+        this.privacySetting = toCopy.getPrivacySetting();
+        this.aboutMe = toCopy.getAboutMe();
+        this.likesAndInterests = toCopy.getLikesAndInterests();
+        this.friendsList = toCopy.getFriendsList();
+        this.friendRequestList = toCopy.getFriendRequestList();
+    }
+
+    /**
      * Gets the profile's username
      *
      * @return profile's username
