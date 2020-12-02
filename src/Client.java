@@ -113,16 +113,17 @@ public class Client {
      * @param contactInfo The Profile's contact info
      * @throws UserNotFoundError Thrown if userName is already taken by a different user
      */
-    public void createProfile(String userName, String pass, String name, String contactInfo) throws UserNotFoundError {
+    public Profile createProfile(String userName, String pass, String name, String contactInfo) throws UserNotFoundError {
         receiveProfiles();
         for (Profile p : betterBookProfiles) {
             if (p.getUsername().equals(userName)) {
                 throw new UserNotFoundError("Username taken!");
-            }
-        }
+          }
+       }
         Profile p = new Profile(userName, pass, name, contactInfo);
         betterBookProfiles.add(p);
         sendProfiles();
+        return p;
     }
 
     /**

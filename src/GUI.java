@@ -64,8 +64,7 @@ public class GUI extends JComponent implements Runnable {
 	public GUI() {
 		// Creating a new client and passing it preset info to connect
 		try {
-			// this.client = new Client(hostname, portNumber);
-			profile = new Profile("AJohnson132490", "Lets", "Austin", "6841 Tadpole Ct");
+			this.client = new Client(hostname, portNumber);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "There was an issue connecting to the server!", "ERROR",
 					JOptionPane.ERROR_MESSAGE);
@@ -79,7 +78,7 @@ public class GUI extends JComponent implements Runnable {
 			if (e.getSource() == signInButton) {
 				try {
 					profile = client.signIn(usernameField.getText(), passwordField.getText());
-					successfulLogin = true;
+					profilePage();
 				} catch (UserNotFoundError e1) {
 					JOptionPane.showMessageDialog(null, "Username or password is incorrect!\nPlease Try again!", "ERROR",
 							JOptionPane.ERROR_MESSAGE);
@@ -91,8 +90,15 @@ public class GUI extends JComponent implements Runnable {
 			}
 			if (e.getSource() == registerButton) {
 				if (passwordField.getText().equals(verifyPassword.getText())) {
-					//profile = new Profile(client.createUser(usernameField.getText(), passwordField.getText(),
-					// nameField.getText(), contactInformationField.getText()));
+					try {
+						client.createProfile(usernameField.getText(), passwordField.getText(),
+								nameField.getText(), contactInformationField.getText());
+						profile = new Profile(usernameField.getText(), passwordField.getText(),
+								nameField.getText(), contactInformationField.getText());
+					} catch (UserNotFoundError e1) {
+						JOptionPane.showMessageDialog(null, "OOPS!", "ERROR",
+								JOptionPane.ERROR_MESSAGE);
+					}
 					signInPage();
 				}
 				else {
@@ -153,6 +159,9 @@ public class GUI extends JComponent implements Runnable {
 		c.gridy = 5;
 		newAccountButton.addActionListener(actionListener);
 		frame.add(newAccountButton, c);
+		newAccountButton.addActionListener(e -> {
+			frame.dispose();
+		});
 		
 		// Making the frame visible
 		frame.setSize(300, 200);
@@ -194,9 +203,6 @@ public class GUI extends JComponent implements Runnable {
 		c.gridy = 10;
 		registerButton.addActionListener(actionListener);
 		frame.add(registerButton, c);
-		registerButton.addActionListener(e -> {
-			frame.dispose();
-		});
 		
 		
 		// Making the frame visible
@@ -486,10 +492,10 @@ public class GUI extends JComponent implements Runnable {
 	
 	public void run() {
 		// Running the sign in page
-		//signInPage();
+		signInPage();
 		
 		//== false will be removed once client is done
-		if (successfulLogin == false) {
+		if (successfulLogin) {
 			profilePage();
 		}
 		
