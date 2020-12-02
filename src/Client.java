@@ -16,6 +16,8 @@ import java.util.*;
 public class Client {
     public ArrayList<Profile> betterBookProfiles;  // ArrayList containing all profiles
     private Socket sock;    // Socket used to connect to server
+    private ObjectOutputStream writer;
+    private ObjectInputStream objectReader;
 
     /**
      * Initializes new Client connected at hostName:portNumber
@@ -26,6 +28,8 @@ public class Client {
     public Client(String hostName, int portNumber) throws UnknownHostException, IOException {
         sock = new Socket(hostName, portNumber);
         betterBookProfiles = new ArrayList<Profile>();
+        writer = new ObjectOutputStream(sock.getOutputStream());
+        objectReader = new ObjectInputStream(sock.getInputStream());
         try {
             Thread.sleep(500);
             receiveProfiles();
@@ -47,12 +51,20 @@ public class Client {
      */
     public void disconnect() {
         // Tell server we're disconnecting
-        try (ObjectOutputStream writer = new ObjectOutputStream(sock.getOutputStream())) {
+        try {
             writer.writeObject("Goodbye");
             writer.flush();
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error disconnecting from server");
+        } finally {
+            try {
+                writer.close();
+                objectReader.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Error disconnecting from server");
+            }
         }
     }
 
@@ -60,8 +72,7 @@ public class Client {
      * Receives profiles sent from the server
      */
     public void receiveProfiles() {
-        try (ObjectInputStream objectReader = new ObjectInputStream(sock.getInputStream());
-             ObjectOutputStream writer = new ObjectOutputStream(sock.getOutputStream())) {
+        try {
             // Tells the server we want to receive profiles
             writer.writeObject("receiveProfiles");
             writer.flush();
@@ -84,18 +95,18 @@ public class Client {
      * Sends profiles to the server
      */
     public void sendProfiles() {
-        try (ObjectOutputStream objectWriter = new ObjectOutputStream(sock.getOutputStream())) {
+        try {
             // Tell the server we want to send profiles
-            objectWriter.writeObject("sendProfiles");
-            objectWriter.flush();
+            writer.writeObject("sendProfiles");
+            writer.flush();
 
             // Write all of the Profiles we have stored
             for (Profile p : betterBookProfiles) {
-                objectWriter.writeObject(p);
+                writer.writeObject(p);
             }
             // Tell the server that it is at the end of the list
-            objectWriter.writeObject("Goodbye");
-            objectWriter.flush();
+            writer.writeObject("Goodbye");
+            writer.flush();
 
         } catch (Exception e) {
             e.printStackTrace();
