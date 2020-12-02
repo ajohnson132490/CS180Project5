@@ -107,7 +107,12 @@ public class Server implements Runnable {
     public static void main(String[] args) throws Exception {
         ServerSocket ssock = new ServerSocket(54234);
         betterBookProfiles = new ArrayList<>();
-        loadProfiles("betterBookProfiles.txt"); // Initializes synchronized profile list.
+        try {
+            loadProfiles("betterBookProfiles.txt"); // Initializes synchronized profile list.
+        } catch (Exception e) {
+            // If the profile list isn't found create a new save
+            save("betterBookProfiles.txt");
+        }
         System.out.println("Listening");
 
         while (true) { // Forever loops and accepts new clients. Assigns a thread to each client.
@@ -142,6 +147,7 @@ public class Server implements Runnable {
             }
         } catch (EOFException e){
             System.out.println("Existing profiles added.");
+            oi.close();
             return;
         }
     }
@@ -159,5 +165,7 @@ public class Server implements Runnable {
         for(Profile p: betterBookProfiles){
             o.writeObject(p);
         }
+        o.flush();
+        o.close();
     }
 }
