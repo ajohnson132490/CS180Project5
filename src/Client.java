@@ -26,6 +26,7 @@ public class Client {
     public Client(String hostName, int portNumber) throws UnknownHostException, IOException {
         sock = new Socket(hostName, portNumber);
         betterBookProfiles = new ArrayList<Profile>();
+        receiveProfiles();
     }
 
     /**
@@ -81,6 +82,7 @@ public class Client {
             // Tell the server we want to send profiles
             objectWriter.writeObject("sendProfiles");
             objectWriter.flush();
+
             // Write all of the Profiles we have stored
             for (Profile p : betterBookProfiles) {
                 objectWriter.writeObject(p);
@@ -88,6 +90,7 @@ public class Client {
             // Tell the server that it is at the end of the list
             objectWriter.writeObject("Goodbye");
             objectWriter.flush();
+
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error sending profiles to server");
@@ -105,11 +108,15 @@ public class Client {
      */
     public void createProfile(String userName, String pass, String name, String contactInfo) throws UserNotFoundError {
         receiveProfiles();
+
+        // check if username is available
         for (Profile p : betterBookProfiles) {
             if (p.getUsername().equals(userName)) {
                 throw new UserNotFoundError("Username taken!");
             }
         }
+
+        // create a new Profile w given parameters, add to list, update server's list
         Profile p = new Profile(userName, pass, name, contactInfo);
         betterBookProfiles.add(p);
         sendProfiles();
@@ -155,7 +162,9 @@ public class Client {
      */
     public void sendFriendRequest(Profile sending, Profile receiving) {
         receiveProfiles();
-        receiving.getFriendRequestList().add(sending);
+        if (!receiving.getFriendRequestList().contains(sending)) {
+            receiving.getFriendRequestList().add(sending);
+        }
         sendProfiles();
     }
 
@@ -200,6 +209,7 @@ public class Client {
      * @throws UserNotFoundError Thrown if no user has a matching username or passwords don't match
      */
     public Profile signIn(String username, String password) throws UserNotFoundError {
+        receiveProfiles();
         for (Profile p : betterBookProfiles) {
             if (p.getUsername().equals(username)) {
                 if (p.getPassword().equals(password)) {
