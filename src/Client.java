@@ -182,14 +182,14 @@ public class Client {
      * @param username The Profile to be located
      * @return The index of p, -1 if not found
      */
-    public int locateProfile(String username) {
+    public Profile locateProfile(String username) {
         receiveProfiles();
         for (int i = 0; i < betterBookProfiles.size(); i++) {
             if (username.equals(betterBookProfiles.get(i).getUsername())) {
-                return i;
+                return betterBookProfiles.get(i);
             }
         }
-        return -1;
+        return null;
     }
 
     /**
