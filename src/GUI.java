@@ -26,7 +26,6 @@ public class GUI extends JComponent implements Runnable {
 	Profile profile; // The current users profile
 	private String hostname = "localhost"; // The host name for the client to connect to
 	private int portNumber = 4242; // The port for the client to connect to
-	private boolean successfulLogin = false;
 	GUI gui;
 	
 	// Buttons
@@ -36,6 +35,8 @@ public class GUI extends JComponent implements Runnable {
 	JButton registerButton = new JButton("Register");
 	JButton searchButton = new JButton("Search");
 	JButton confirmButton = new JButton("Confirm");
+	JButton confirmFriendRequest[];
+	JButton denyFriendRequest[];
 	
 	// Menu Bar
 	JMenu accountMenu = new JMenu("Account");
@@ -64,8 +65,7 @@ public class GUI extends JComponent implements Runnable {
 	public GUI() {
 		// Creating a new client and passing it preset info to connect
 		try {
-			// this.client = new Client(hostname, portNumber);
-			profile = new Profile("AJohnson132490", "Lets", "Austin", "6841 Tadpole Ct");
+			this.client = new Client(hostname, portNumber);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "There was an issue connecting to the server!", "ERROR",
 					JOptionPane.ERROR_MESSAGE);
@@ -79,27 +79,32 @@ public class GUI extends JComponent implements Runnable {
 			if (e.getSource() == signInButton) {
 				try {
 					profile = client.signIn(usernameField.getText(), passwordField.getText());
-					successfulLogin = true;
 				} catch (UserNotFoundError e1) {
 					JOptionPane.showMessageDialog(null, "Username or password is incorrect!\nPlease Try again!", "ERROR",
 							JOptionPane.ERROR_MESSAGE);
 					e1.printStackTrace();
 				}
+				profilePage();
 			}
 			if (e.getSource() == newAccountButton) {
 				newAccountPage();
 			}
 			if (e.getSource() == registerButton) {
 				if (passwordField.getText().equals(verifyPassword.getText())) {
-					//profile = new Profile(client.createUser(usernameField.getText(), passwordField.getText(),
-					// nameField.getText(), contactInformationField.getText()));
+					try {
+						client.createProfile(usernameField.getText(), passwordField.getText(),
+								nameField.getText(), contactInformationField.getText());
+						profile = new Profile(usernameField.getText(), passwordField.getText(),
+								nameField.getText(), contactInformationField.getText());
+					} catch (UserNotFoundError userNotFoundError) {
+						userNotFoundError.printStackTrace();
+					}
 					signInPage();
 				}
 				else {
 					JOptionPane.showMessageDialog(null, "Passwords do not match!", "ERROR",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
-				
 			}
 			if (e.getSource() == addFriend) { // Change button?
 				// friendList();
@@ -109,6 +114,7 @@ public class GUI extends JComponent implements Runnable {
 			}
 		}
 	};
+	
 	ActionListener menuBarListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == createAccount) {
@@ -120,7 +126,12 @@ public class GUI extends JComponent implements Runnable {
 			if (e.getSource() == confirmButton) {
 				Profile newProfile = new Profile(usernameField.getText(), passwordField.getText(),
 						nameField.getText(), contactInformationField.getText());
-				client.updateProfile(profile, newProfile);
+				try {
+					client.updateProfile(profile, newProfile);
+				} catch (UserNotFoundError e1) {
+					JOptionPane.showMessageDialog(null, "Error updating profile!", "ERROR",
+							JOptionPane.INFORMATION_MESSAGE);
+				}
 			}
 		}
 	};
@@ -153,6 +164,9 @@ public class GUI extends JComponent implements Runnable {
 		c.gridy = 5;
 		newAccountButton.addActionListener(actionListener);
 		frame.add(newAccountButton, c);
+		newAccountButton.addActionListener(e -> {
+			frame.dispose();
+		});
 		
 		// Making the frame visible
 		frame.setSize(300, 200);
@@ -302,6 +316,9 @@ public class GUI extends JComponent implements Runnable {
 						client.deleteProfile(profile);
 					} catch (NullPointerException e1) {
 						System.out.println("Null pointer on account delete. Still Runs.");
+					} catch (UserNotFoundError e1) {
+						JOptionPane.showMessageDialog(null, "Could not delete profile!", "ERROR",
+								JOptionPane.INFORMATION_MESSAGE);
 					}
 				} else if (selection == JOptionPane.NO_OPTION) {
 					frame.dispose();
@@ -339,6 +356,7 @@ public class GUI extends JComponent implements Runnable {
 		displayUserInformation(frame, c);
 		displayUserFriendList(frame, c);
 		displayUserInterestList(frame, c);
+		displayPendingFriendRequests(frame, c);
 	}
 	
 	//Shows all personal information in top left corner
@@ -413,7 +431,8 @@ public class GUI extends JComponent implements Runnable {
 		JPanel internalFriendPanel = new JPanel();
 		internalFriendPanel.setLayout(new BoxLayout(internalFriendPanel, BoxLayout.Y_AXIS));
 		internalFriendPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
-		internalFriendPanel.setMinimumSize(new Dimension(250, 100));
+		internalFriendPanel.setMinimumSize(new Dimension(250, 200));
+		internalFriendPanel.setMaximumSize(new Dimension(250, 200));
 		friendPanelBuffer.add(internalFriendPanel);
 		ArrayList <Profile> friends = profile.getFriendsList();
 		
@@ -444,7 +463,7 @@ public class GUI extends JComponent implements Runnable {
 		//Creating a buffer for the interests panel
 		JPanel interestsBuffer = new JPanel();
 		interestsBuffer.setLayout(new BoxLayout(interestsBuffer, BoxLayout.Y_AXIS));
-		interestsBuffer.setBorder(new EmptyBorder(0, 25, 0, 25));
+		interestsBuffer.setBorder(new EmptyBorder(0, 50, 0, 25));
 		
 		//Creating the interest Panel
 		JPanel interestsPanel = new JPanel();
@@ -484,15 +503,75 @@ public class GUI extends JComponent implements Runnable {
 		interestsPanel.setBackground(Color.orange);
 	}
 	
+	//Shows current pending friend requests
+	public void displayPendingFriendRequests(JFrame frame, GridBagConstraints c) {
+		//Creating friend buffer for precise position
+		JPanel friendPanelBuffer = new JPanel();
+		friendPanelBuffer.setLayout(new BoxLayout(friendPanelBuffer, BoxLayout.Y_AXIS));
+		friendPanelBuffer.setBorder(new EmptyBorder(0, 25, 0, 150));
+		
+		//Creating the friend Panel
+		JPanel requestPanel = new JPanel();
+		requestPanel.setLayout(new BoxLayout(requestPanel, BoxLayout.Y_AXIS));
+		requestPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
+		requestPanel.setMinimumSize(new Dimension(300, 200));
+		requestPanel.setMaximumSize(new Dimension(300, 200));
+		
+		//Adding the panel to the buffer
+		friendPanelBuffer.add(requestPanel);
+		
+		//Getting a local list of all the friend requests
+		ArrayList <Profile> friends = profile.getFriendRequestList();
+		
+		//Default action if no friends exist
+		if (friends.size() >= 0) {
+			JLabel emptyFriendList = new JLabel("<html>No Pending Friend Requests...</html>");
+			emptyFriendList.setBorder(new EmptyBorder(0, 15, 15, 15));
+			emptyFriendList.setFont(new Font("Verdana", Font.PLAIN, 15));
+			requestPanel.add(emptyFriendList);
+		} else {
+			//Loading up the right number of friend request buttons
+			confirmFriendRequest = new JButton[friends.size()];
+			denyFriendRequest = new JButton[friends.size()];
+			
+			//Adding any friends that have accepted the friend request
+			for (int i = 0; i < friends.size(); i++) {
+				//Setting the button to be yes or no
+				confirmFriendRequest[i] = new JButton("✓");
+				denyFriendRequest[i] = new JButton("X");
+				
+				//Creating a panel for the current request
+				JPanel currentRequest = new JPanel();
+				currentRequest.setLayout(new BoxLayout(currentRequest, BoxLayout.X_AXIS));
+				currentRequest.setBorder(new EmptyBorder(15, 15, 15, 15));
+				currentRequest.setMinimumSize(new Dimension(200, 20));
+				currentRequest.setMaximumSize(new Dimension(200, 20));
+				
+				//Loading the username
+				JLabel currentFriend = new JLabel(friends.get(i).getUsername());
+				currentFriend.setBorder(new EmptyBorder(0, 0, 15, 0));
+				currentFriend.setFont(new Font("Verdana", Font.PLAIN, 15));
+				currentRequest.add(currentFriend);
+				currentRequest.add(Box.createHorizontalBox());
+				
+				//Adding the buttons
+				currentRequest.add(confirmFriendRequest[i]);
+				currentRequest.add(denyFriendRequest[i]);
+				requestPanel.add(currentRequest);
+				
+			}
+		}
+		//Adding the friend buffer and panel to the display at gridx 1 gridy 0
+		c.gridx = 1;
+		c.gridy = -1;
+		frame.add(friendPanelBuffer, c);
+		requestPanel.setVisible(true);
+		requestPanel.setBackground(Color.pink);
+	}
+	
 	public void run() {
 		// Running the sign in page
-		//signInPage();
-		
-		//== false will be removed once client is done
-		if (successfulLogin == false) {
-			profilePage();
-		}
-		
+		signInPage();
 	}
 	
 	public static void main(String[] args) {
