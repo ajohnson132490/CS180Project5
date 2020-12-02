@@ -38,6 +38,7 @@ public class Client {
         // you want, like no spaces, or must have a capital, ect. -Austin
         return new Profile(username, password, name, contactInformation);
     }
+
     /**
      * Disconnects from server and closes reader and writer
      */
@@ -165,6 +166,24 @@ public class Client {
         receiveProfiles();
         for (int i = 0; i < betterBookProfiles.size(); i++) {
             if (p.equals(betterBookProfiles.get(i))) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Locates the given profile
+     *
+     * @param username The Profile to be located
+     * @return The index of p, -1 if not found
+     */
+    //TODO: add equals method to Profile
+    //TODO: ProfileNotFoundException?
+    private int locateProfile(String username) {
+        receiveProfiles();
+        for (int i = 0; i < betterBookProfiles.size(); i++) {
+            if (username.equals(betterBookProfiles.get(i).getUsername())) {
                 return i;
             }
         }
