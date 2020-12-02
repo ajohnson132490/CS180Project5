@@ -14,7 +14,7 @@ import java.util.*;
  * @version 30 November 2020
  */
 public class Client {
-    private ArrayList<Profile> betterBookProfiles;  // ArrayList containing all profiles
+    public ArrayList<Profile> betterBookProfiles;  // ArrayList containing all profiles
     private Socket sock;    // Socket used to connect to server
     private BufferedReader reader;  // Used to read messages from server
     private PrintWriter writer; // Used to send messages to server
@@ -32,10 +32,10 @@ public class Client {
         writer = new PrintWriter(sock.getOutputStream());
     }
 
+    /**
+     * deprecated, use createProfile instead
+     */
     public Profile createUser(String username, String password, String name, String contactInformation) {
-        //TODO given this information, create a new user, add it to the database, then return the profile object for
-        // the gui to use. Don't forget to make sure that the username and password adhere to any conventions that
-        // you want, like no spaces, or must have a capital, ect. -Austin
         return new Profile(username, password, name, contactInformation);
     }
 
@@ -154,6 +154,12 @@ public class Client {
         sendProfiles();
     }
 
+    public void sendFriendRequest(Profile sending, Profile receiving) {
+        receiveProfiles();
+        receiving.getFriendRequestList().add(sending);
+        sendProfiles();
+    }
+
     /**
      * Locates the given profile
      *
@@ -162,7 +168,7 @@ public class Client {
      */
     //TODO: add equals method to Profile
     //TODO: ProfileNotFoundException?
-    private int locateProfile(Profile p) {
+    public int locateProfile(Profile p) {
         receiveProfiles();
         for (int i = 0; i < betterBookProfiles.size(); i++) {
             if (p.equals(betterBookProfiles.get(i))) {
@@ -180,7 +186,7 @@ public class Client {
      */
     //TODO: add equals method to Profile
     //TODO: ProfileNotFoundException?
-    private int locateProfile(String username) {
+    public int locateProfile(String username) {
         receiveProfiles();
         for (int i = 0; i < betterBookProfiles.size(); i++) {
             if (username.equals(betterBookProfiles.get(i).getUsername())) {
@@ -210,5 +216,9 @@ public class Client {
             }
         }
         throw new UserNotFoundError("User not found!");
+    }
+
+    public ArrayList<Profile> getBetterBookProfiles() {
+        return betterBookProfiles;
     }
 }
