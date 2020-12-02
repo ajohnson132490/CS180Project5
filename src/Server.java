@@ -39,8 +39,8 @@ public class Server implements Runnable {
             System.out.println("Client connected!");
             try {
                 // Starts reading and writing streams
-                ObjectInputStream reader = new ObjectInputStream(csock.getInputStream());
                 ObjectOutputStream objectWriter = new ObjectOutputStream(csock.getOutputStream());
+                ObjectInputStream reader = new ObjectInputStream(csock.getInputStream());
 
                 // Reads message from client
                 // As per protocol, first message is a String
