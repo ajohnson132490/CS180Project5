@@ -26,7 +26,13 @@ public class Client {
     public Client(String hostName, int portNumber) throws UnknownHostException, IOException {
         sock = new Socket(hostName, portNumber);
         betterBookProfiles = new ArrayList<Profile>();
-        receiveProfiles();
+        try {
+            Thread.sleep(500);
+            receiveProfiles();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error connecting to server");
+        }
     }
 
     /**
