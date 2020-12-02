@@ -77,6 +77,7 @@ public class Server implements Runnable {
      */
     public synchronized static void handleMessage(ObjectInputStream reader,
             ObjectOutputStream objectWriter, String message){
+        System.out.println("Starting to process message...");
         try {
             if (message.equals("receiveProfiles")) {
                 // Client is requesting profile list
@@ -86,6 +87,7 @@ public class Server implements Runnable {
                 // Protocol states String "Goodbye" will end sending profiles
                 objectWriter.writeObject("Goodbye");
                 objectWriter.flush();
+                System.out.println("Sending Profiles");
             } else {
                 // Client is writing new profile list
                 ArrayList<Profile> newList = new ArrayList<>();
@@ -93,11 +95,13 @@ public class Server implements Runnable {
                 // Protocol states String "Goodbye" will end sending profiles
                 while(!(input instanceof String)) {
                     newList.add((Profile) input);
+                    //System.out.println(((Profile) input).getName());
                     input = reader.readObject();
                 }
                 betterBookProfiles = newList;
                 // Saves new list to memory.
                 save("betterBookProfiles.txt");
+                System.out.println("Receiving Profiles");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -113,11 +117,15 @@ public class Server implements Runnable {
             // If the profile list isn't found create a new save
             save("betterBookProfiles.txt");
         }
-        System.out.println("Listening");
+
+        for(Profile p: betterBookProfiles){
+            System.out.println(p.getName());
+        }
+
+        System.out.println("Listening...");
 
         while (true) { // Forever loops and accepts new clients. Assigns a thread to each client.
             Socket sock = ssock.accept();
-            System.out.println("Connected");
             new Thread(new Server(sock)).start();
         }
     }
