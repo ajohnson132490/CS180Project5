@@ -122,11 +122,12 @@ public class Client {
      * @param oldProfile The Profile to be updated
      * @param newProfile The Profile with the updated information
      */
-    //TODO: ProfileNotFoundException?
-    public void updateProfile(Profile oldProfile, Profile newProfile) {
+    public void updateProfile(Profile oldProfile, Profile newProfile) throws UserNotFoundError {
         int ind = locateProfile(oldProfile);
         if (ind != -1) {
             betterBookProfiles.set(ind, newProfile);
+        } else {
+            throw new UserNotFoundError("User not found!");
         }
         sendProfiles();
     }
@@ -136,15 +137,23 @@ public class Client {
      *
      * @param p The Profile to be deleted
      */
-    //TODO: ProfileNotFoundException?
-    public void deleteProfile(Profile p) {
+    public void deleteProfile(Profile p) throws UserNotFoundError {
         int ind = locateProfile(p);
         if (ind != -1) {
             betterBookProfiles.remove(ind);
+        } else {
+            throw new UserNotFoundError("User not found!");
         }
         sendProfiles();
     }
 
+    /**
+     * Sends a friend request from sending to receiving
+     * Basically, adds sending to receiving's friend request list
+     *
+     * @param sending   The Profile sending the friend request
+     * @param receiving The Profile receiving the friend request
+     */
     public void sendFriendRequest(Profile sending, Profile receiving) {
         receiveProfiles();
         receiving.getFriendRequestList().add(sending);
@@ -157,8 +166,6 @@ public class Client {
      * @param p The Profile to be located
      * @return The index of p, -1 if not found
      */
-    //TODO: add equals method to Profile
-    //TODO: ProfileNotFoundException?
     public int locateProfile(Profile p) {
         receiveProfiles();
         for (int i = 0; i < betterBookProfiles.size(); i++) {
@@ -175,8 +182,6 @@ public class Client {
      * @param username The Profile to be located
      * @return The index of p, -1 if not found
      */
-    //TODO: add equals method to Profile
-    //TODO: ProfileNotFoundException?
     public int locateProfile(String username) {
         receiveProfiles();
         for (int i = 0; i < betterBookProfiles.size(); i++) {
