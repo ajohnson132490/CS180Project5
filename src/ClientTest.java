@@ -4,6 +4,7 @@ import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
 import java.io.*;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -28,7 +29,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 /**
- * A class to test Server and all of its
+ * A class to test Client and all of its
  * methods using JUnit4.
  *
  * The requirements are as follows:
@@ -45,24 +46,18 @@ import static org.junit.Assert.fail;
  * Note: Methods solely used for GUI operations are exempt from this
  * requirement. Instead, include the testing used to verify they work in your documentation.
  *
- * tests methods save, loadProfiles, and handleMessage
+ * tests methods getBetterBookProfiles, signIn
  */
-public class ServerTest {
+public class ClientTest {
 
     public static void main(String[] args) {
-        try {
-            File f = new File("forJUNITTests/saveTestOne.txt");
-            f.delete();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         Result result = JUnitCore.runClasses(TestCase.class);
 
         if (result.wasSuccessful()) {
             System.out.println("All tests ran successfully.");
         } else {
-            System.out.println("Incoming failures...");
+            System.out.println("Incoming failures... sad");
             for (Failure f: result.getFailures()) {
                 System.out.println(f.toString());
             }
@@ -80,8 +75,8 @@ public class ServerTest {
             Class<?>[] superinterfaces;
 
             // Set the class being tested
-            clazz = Server.class;
-            className = "Server";
+            clazz = Client.class;
+            className = "Client";
 
             // Perform tests
 
@@ -97,20 +92,20 @@ public class ServerTest {
 
             Assert.assertEquals("Ensure that `" + className + "` extends `Object`!", Object.class, superclass);
 
-            Assert.assertEquals("Ensure that `" + className + "` implements Runnable!", 1, superinterfaces.length);
+            Assert.assertEquals("Ensure that `" + className + "` doesn't implement an interface!", 0, superinterfaces.length);
         }
 
         // All fields exist with correct type and access modifier
         @Test(timeout = 1_000)
-        public void csockFieldDeclarationTest() {
+        public void sockFieldDeclarationTest() {
             Class<?> clazz;
-            String className = "Server";
+            String className = "Client";
             Field testField;
             int modifiers;
             Class<?> type;
 
             // Set the field that you want to test
-            String fieldName = "csock";
+            String fieldName = "sock";
 
             // Set the type of the field you want to test
             // Use the type + .class
@@ -118,7 +113,7 @@ public class ServerTest {
             Class<?> expectedType = Socket.class;
 
             // Set the class being tested
-            clazz = Server.class;
+            clazz = Client.class;
 
             // Attempt to access the class field
             try {
@@ -146,7 +141,7 @@ public class ServerTest {
         @Test(timeout = 1_000)
         public void betterBookProfilesFieldDeclarationTest() {
             Class<?> clazz;
-            String className = "Server";
+            String className = "Client";
             Field testField;
             int modifiers;
             Class<?> type;
@@ -160,7 +155,7 @@ public class ServerTest {
             Class<?> expectedType = ArrayList.class;
 
             // Set the class being tested
-            clazz = Server.class;
+            clazz = Client.class;
 
             // Attempt to access the class field
             try {
@@ -180,18 +175,16 @@ public class ServerTest {
 
             Assert.assertTrue("Ensure that `" + className + "`'s `" + fieldName + "` field is not `final`!", !Modifier.isFinal(modifiers));
 
-            Assert.assertFalse("Ensure that `" + className + "`'s `" + fieldName + "` field is `static`!", !Modifier.isStatic(modifiers));
-
-            Assert.assertFalse("Ensure that `" + className + "`'s `" + fieldName + "` field is `volatile`!", !Modifier.isVolatile(modifiers));
+            Assert.assertFalse("Ensure that `" + className + "`'s `" + fieldName + "` field is not `static`!", Modifier.isStatic(modifiers));
 
             Assert.assertEquals("Ensure that `" + className + "`'s `" + fieldName + "` field is the correct type!", expectedType, type);
         }
 
         // Verifying if each method exists and has the correct return type + access modifier
         @Test(timeout = 1000)
-        public void serverSaveMethodTest() {
+        public void clientSignInMethodTest() {
             Class<?> clazz;
-            String className = "Server";
+            String className = "Client";
             Method method;
             int modifiers;
             Class<?> actualReturnType;
@@ -199,23 +192,23 @@ public class ServerTest {
             Class<?>[] exceptions;
 
             // Set the method that you want to test
-            String methodName = "save";
+            String methodName = "signIn";
 
             // Set the return type of the method you want to test
             // Use the type + .class
             // For example, String.class or int.class
-            Class<?> expectedReturnType = void.class;
+            Class<?> expectedReturnType = Profile.class;
 
 
             // Set the class being tested
-            clazz = Server.class;
+            clazz = Client.class;
 
             // Attempt to access the class method
             try {
-                method = clazz.getDeclaredMethod(methodName, String.class);
+                method = clazz.getDeclaredMethod(methodName, String.class, String.class);
             } catch (NoSuchMethodException e) {
                 Assert.fail("Ensure that `" + className + "` declares a method named `" + methodName + "` that" +
-                        " has 1 String parameter!");
+                        " has 2 String parameters!");
 
                 return;
             } //end try catch
@@ -238,58 +231,9 @@ public class ServerTest {
         }
 
         @Test(timeout = 1000)
-        public void serverLoadProfilesMethodTest() {
+        public void clientGetBetterBookProfilesMethodTest() {
             Class<?> clazz;
-            String className = "Server";
-            Method method;
-            int modifiers;
-            Class<?> actualReturnType;
-            int expectedLength = 2;
-            Class<?>[] exceptions;
-
-            // Set the method that you want to test
-            String methodName = "loadProfiles";
-
-            // Set the return type of the method you want to test
-            // Use the type + .class
-            // For example, String.class or int.class
-            Class<?> expectedReturnType = void.class;
-
-
-            // Set the class being tested
-            clazz = Server.class;
-
-            // Attempt to access the class method
-            try {
-                method = clazz.getDeclaredMethod(methodName, String.class);
-            } catch (NoSuchMethodException e) {
-                Assert.fail("Ensure that `" + className + "` declares a method named `" + methodName + "` that" +
-                        " has 1 String parameter!");
-
-                return;
-            } //end try catch
-
-            // Perform tests
-
-            modifiers = method.getModifiers();
-
-            actualReturnType = method.getReturnType();
-
-            exceptions = method.getExceptionTypes();
-
-            Assert.assertTrue("Ensure that `" + className + "`'s `" + methodName + "` method is `public`!", Modifier.isPublic(modifiers));
-
-            Assert.assertFalse("Ensure that `" + className + "`'s `" + methodName + "` method is `static`!", !Modifier.isStatic(modifiers));
-
-            Assert.assertEquals("Ensure that `" + className + "`'s `" + methodName + "` method has the correct return type!", expectedReturnType, actualReturnType);
-
-            Assert.assertEquals("Ensure that `" + className + "`'s `" + methodName + "` method has 2 `throws` clause!", expectedLength, exceptions.length);
-        }
-
-        @Test(timeout = 1000)
-        public void serverHandleMessageMethodTest() {
-            Class<?> clazz;
-            String className = "Server";
+            String className = "Client";
             Method method;
             int modifiers;
             Class<?> actualReturnType;
@@ -297,23 +241,23 @@ public class ServerTest {
             Class<?>[] exceptions;
 
             // Set the method that you want to test
-            String methodName = "handleMessage";
+            String methodName = "getBetterBookProfiles";
 
             // Set the return type of the method you want to test
             // Use the type + .class
             // For example, String.class or int.class
-            Class<?> expectedReturnType = void.class;
+            Class<?> expectedReturnType = ArrayList.class;
 
 
             // Set the class being tested
-            clazz = Server.class;
+            clazz = Client.class;
 
             // Attempt to access the class method
             try {
-                method = clazz.getDeclaredMethod(methodName, ObjectInputStream.class, ObjectOutputStream.class, String.class);
+                method = clazz.getDeclaredMethod(methodName);
             } catch (NoSuchMethodException e) {
                 Assert.fail("Ensure that `" + className + "` declares a method named `" + methodName + "` that" +
-                        " has 1 ObjectInputStream parameter, 1 ObjectOutputStream, and 1 String parameter!");
+                        " has 0 parameters!");
 
                 return;
             } //end try catch
@@ -327,8 +271,6 @@ public class ServerTest {
             exceptions = method.getExceptionTypes();
 
             Assert.assertTrue("Ensure that `" + className + "`'s `" + methodName + "` method is `public`!", Modifier.isPublic(modifiers));
-
-            Assert.assertTrue("Ensure that `" + className + "`'s `" + methodName + "` method is `synchronized`!", Modifier.isSynchronized(modifiers));
 
             Assert.assertFalse("Ensure that `" + className + "`'s `" + methodName + "` method is `static`!", !Modifier.isStatic(modifiers));
 
@@ -339,80 +281,104 @@ public class ServerTest {
 
         // Two implementation tests per method
         @Test(timeout = 1000)
-        public void save1(){
-            Server s = new Server(new Socket()); //dummy server
-            s.betterBookProfiles = new ArrayList<>();
-            s.betterBookProfiles.add(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555"));
+        public void signIn1(){
             try {
-                s.save("forJUNITTests/saveTestOne.txt");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            FileInputStream fi;
-            try {
-                fi = new FileInputStream(new File("forJUNITTests/saveTestOne.txt"));
+
+                //new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555")
+
+                ServerSocket ssock = new ServerSocket(420);
+
+                Client c = new Client("localhost", 420);
+                c.betterBookProfiles = new ArrayList<>();
+                c.betterBookProfiles.add(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555"));
+                Profile user = c.signIn("jebbush69", "jebisawesome");
+
+                Assert.assertTrue("SignIn1 Friggen Failed!", user.equals(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555")));
             } catch (Exception e) {
                 e.printStackTrace();
-                return;
-            }
-            ObjectInputStream oi;
-            try {
-                oi = new ObjectInputStream(fi);
-            } catch (Exception e) {
-                System.out.println("Empty profile file!");
-                Assert.fail("'save' Did not write to file.");
-                return;
-            }
-            try {
-                Profile p = (Profile) oi.readObject();
-                Assert.assertTrue(p.equals(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555")));
-            } catch (Exception e) {
-                e.printStackTrace();
-                Assert.fail("'save' Error after reading object");
-                return;
+                Assert.assertTrue("Error in signIn1!", false);
             }
         }
 
         @Test(timeout = 1000)
-        public void save2(){
-            Server s = new Server(new Socket()); //dummy server
-            s.betterBookProfiles = null;
+        public void signIn2(){
             try {
-                s.save("forJUNITTests/saveTestOne.txt"); // .txt file should be empty at time of test
-                Assert.assertTrue("Task 'save' succeeded incorrectly. (try block)", false);
-                return;
-            } catch (IOException e) {
-                e.printStackTrace();
-                Assert.assertTrue("Task 'save' failed successfully.", true); // Omegalul I guess
-                return;
-            } catch (NullPointerException e) {
-                // If betterBookProfiles isn't initialized it will throw
-                // a NPE
-                Assert.assertTrue("Task 'save' failed successfully.", true); // Omegalul I guess
-                return;
-            }
-        }
 
-        @Test(timeout = 1000)
-        public void loadProfiles1() throws IOException, ClassNotFoundException {
-            Server s = new Server(new Socket()); //dummy server
-            s.betterBookProfiles = new ArrayList<>();
-            s.loadProfiles("forJUNITTests/loadProfilesTestOne.txt");
-            Assert.assertTrue("ensure 'loadProfiles is loading profiles correctly",
-                    s.betterBookProfiles.get(0).equals(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555")));
-        }
+                //new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555")
 
-        @Test(timeout = 1000)
-        public void loadProfiles2() throws IOException, ClassNotFoundException {
-            Server s = new Server(new Socket()); //dummy server
-            s.betterBookProfiles = null;
-            try {
-                s.loadProfiles("forJUNITTests/loadProfilesTestOne.txt");
-                Assert.assertFalse("Incorrectly loading text file without betterBookProfiles instantiated.", true);
+                ServerSocket ssock = new ServerSocket(420);
+
+                Client c = new Client("localhost", 420);
+                c.betterBookProfiles = new ArrayList<>();
+                c.betterBookProfiles.add(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555"));
+                Profile user = c.signIn("Samir", "daMonkey");
+
+                Assert.assertTrue("signIn2 Failed!", !user.equals(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555")));
+            } catch (UserNotFoundError e){
+                System.out.println("ProfileNotFound");
+                Assert.assertTrue("signIn2 Failed Successfully.", true);
             } catch (Exception e) {
-                Assert.assertTrue("Task failed successfully.", true);
+                e.printStackTrace();
+                Assert.assertTrue("Error in signIn2!", false);
             }
+        }
 
+        @Test(timeout = 1000)
+        public void getBetterBookProfiles1() {
+            try {
+
+                //new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555")
+
+                ServerSocket ssock = new ServerSocket(420);
+
+                Client c = new Client("localhost", 420);
+
+                ArrayList<Profile> profiles2Test = new ArrayList<>();
+                profiles2Test.add(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555"));
+                profiles2Test.add(new Profile("barrack", "obambruh", "2024", "8001111111"));
+
+                c.betterBookProfiles = new ArrayList<>();
+                for(Profile p: profiles2Test){
+                    c.getBetterBookProfiles().add(p);
+                }
+
+                ArrayList<Profile> users = c.getBetterBookProfiles();
+
+                Assert.assertTrue("getBetterBookProfiles1 Failed!", users.equals(profiles2Test));
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.assertTrue("Error in getBetterBookProfiles1!", false);
+            }
+        }
+
+        @Test(timeout = 1000)
+        public void getBetterBookProfiles2() {
+            try {
+
+                //new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555")
+
+                ServerSocket ssock = new ServerSocket(420);
+
+                Client c = new Client("localhost", 420);
+
+                ArrayList<Profile> profiles2Test = new ArrayList<>();
+                profiles2Test.add(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555"));
+                profiles2Test.add(new Profile("barrack", "obambruh", "2024", "8001111111"));
+
+                c.betterBookProfiles = new ArrayList<>();
+                for(Profile p: profiles2Test){
+                    c.getBetterBookProfiles().add(p);
+                }
+
+                profiles2Test.add(new Profile("barrack", "obambruh", "2024", "8001111111"));
+
+                ArrayList<Profile> users = c.getBetterBookProfiles();
+
+                Assert.assertTrue("getBetterBookProfiles1 Failed!", !users.equals(profiles2Test));
+            } catch (Exception e) {
+                e.printStackTrace();
+                Assert.assertTrue("Error in getBetterBookProfiles1!", false);
+            }
         }
 
 

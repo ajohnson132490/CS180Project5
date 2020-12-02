@@ -77,6 +77,7 @@ public class Server implements Runnable {
      */
     public synchronized static void handleMessage(ObjectInputStream reader,
             ObjectOutputStream objectWriter, String message){
+        System.out.println("Starting to process message...");
         try {
             if (message.equals("receiveProfiles")) {
                 // Client is requesting profile list
@@ -86,6 +87,7 @@ public class Server implements Runnable {
                 // Protocol states String "Goodbye" will end sending profiles
                 objectWriter.writeObject("Goodbye");
                 objectWriter.flush();
+                System.out.println("Sending Profiles");
             } else {
                 // Client is writing new profile list
                 ArrayList<Profile> newList = new ArrayList<>();
@@ -93,11 +95,13 @@ public class Server implements Runnable {
                 // Protocol states String "Goodbye" will end sending profiles
                 while(!(input instanceof String)) {
                     newList.add((Profile) input);
+                    //System.out.println(((Profile) input).getName());
                     input = reader.readObject();
                 }
                 betterBookProfiles = newList;
                 // Saves new list to memory.
                 save("betterBookProfiles.txt");
+                System.out.println("Receiving Profiles");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -107,12 +111,21 @@ public class Server implements Runnable {
     public static void main(String[] args) throws Exception {
         ServerSocket ssock = new ServerSocket(4242);
         betterBookProfiles = new ArrayList<>();
-        loadProfiles("betterBookProfiles.txt"); // Initializes synchronized profile list.
-        System.out.println("Listening");
+        try {
+            loadProfiles("betterBookProfiles.txt"); // Initializes synchronized profile list.
+        } catch (Exception e) {
+            // If the profile list isn't found create a new save
+            save("betterBookProfiles.txt");
+        }
+
+        for(Profile p: betterBookProfiles){
+            System.out.println(p.getName());
+        }
+
+        System.out.println("Listening...");
 
         while (true) { // Forever loops and accepts new clients. Assigns a thread to each client.
             Socket sock = ssock.accept();
-            System.out.println("Connected");
             new Thread(new Server(sock)).start();
         }
     }
@@ -124,8 +137,14 @@ public class Server implements Runnable {
      * @param fileName File name to load profiles from
      */
     public static void loadProfiles(String fileName) throws IOException, ClassNotFoundException {
-        FileInputStream fi = new FileInputStream(fileName);
-        ObjectInputStream oi = new ObjectInputStream(fi);
+        FileInputStream fi = new FileInputStream(new File(fileName));
+        ObjectInputStream oi;
+        try {
+            oi = new ObjectInputStream(fi);
+        } catch (Exception e) {
+            System.out.println("Empty profile file!");
+            return;
+        }
 
         // Loads every profile stored in memory to "betterBookProfiles"
         Profile p = (Profile) oi.readObject();
@@ -135,7 +154,8 @@ public class Server implements Runnable {
                 p = (Profile) oi.readObject();
             }
         } catch (EOFException e){
-            e.printStackTrace();
+            System.out.println("Existing profiles added.");
+            oi.close();
             return;
         }
     }
@@ -153,5 +173,7 @@ public class Server implements Runnable {
         for(Profile p: betterBookProfiles){
             o.writeObject(p);
         }
+        o.flush();
+        o.close();
     }
 }
