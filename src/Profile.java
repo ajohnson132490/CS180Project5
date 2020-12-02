@@ -50,6 +50,22 @@ public class Profile implements Serializable {
     }
 
     /**
+     * Copy consturctor for a Profile object
+     * @param toCopy Profile object to be copied
+     */
+    public Profile (Profile toCopy) {
+        this.username = toCopy.getName();
+        this.password = toCopy.getPassword();
+        this.name = toCopy.getName();
+        this.contactInformation = toCopy.getContactInformation();
+        this.privacySetting = toCopy.getPrivacySetting();
+        this.aboutMe = toCopy.getAboutMe();
+        this.likesAndInterests = toCopy.getLikesAndInterests();
+        this.friendsList = toCopy.getFriendsList();
+        this.friendRequestList = toCopy.getFriendRequestList();
+    }
+
+    /**
      * Gets the profile's username
      *
      * @return profile's username
@@ -65,6 +81,15 @@ public class Profile implements Serializable {
      */
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    /**
+     * Gets the profile's password
+     *
+     * @return profile's password
+     */
+    public String getPassword() {
+            return password;
     }
 
     /**
@@ -238,5 +263,23 @@ public class Profile implements Serializable {
      */
     public void setAboutMe(String aboutMe) {
         this.aboutMe = aboutMe;
+    }
+
+    /**
+     * returns true if username, password, contact info, and name are all equal
+     *
+     * @param o The object to compare against
+     * @return true if o contains the same data
+     */
+    public boolean equals(Object o) {
+            if (!(o instanceof Profile)) {
+                    return false;
+            }
+
+            Profile p = (Profile) o;
+            return p.getUsername().equals(getUsername()) &&
+                    p.getPassword().equals(getPassword()) &&
+                    p.getContactInformation().equals(getContactInformation()) &&
+                    p.getName().equals(getName());
     }
 }
