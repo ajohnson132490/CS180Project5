@@ -125,7 +125,13 @@ public class Server implements Runnable {
      */
     public static void loadProfiles(String fileName) throws IOException, ClassNotFoundException {
         FileInputStream fi = new FileInputStream(new File(fileName));
-        ObjectInputStream oi = new ObjectInputStream(fi);
+        ObjectInputStream oi;
+        try {
+            oi = new ObjectInputStream(fi);
+        } catch (Exception e) {
+            System.out.println("Empty profile file!");
+            return;
+        }
 
         // Loads every profile stored in memory to "betterBookProfiles"
         Profile p = (Profile) oi.readObject();
@@ -135,7 +141,7 @@ public class Server implements Runnable {
                 p = (Profile) oi.readObject();
             }
         } catch (EOFException e){
-            e.printStackTrace();
+            System.out.println("Existing profiles added.");
             return;
         }
     }
