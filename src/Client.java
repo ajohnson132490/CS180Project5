@@ -104,7 +104,7 @@ public class Client {
      * @throws UserNotFoundError Thrown if userName is already taken by a different user
      */
     public Profile createProfile(String userName, String pass, String name, String contactInfo) throws UserNotFoundError {
-        receiveProfiles();
+        //receiveProfiles();
         for (Profile p : betterBookProfiles) {
             if (p.getUsername().equals(userName)) {
                 throw new UserNotFoundError("Username taken!");
