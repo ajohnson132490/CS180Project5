@@ -26,7 +26,6 @@ public class GUI extends JComponent implements Runnable {
 	Profile profile; // The current users profile
 	private String hostname = "localhost"; // The host name for the client to connect to
 	private int portNumber = 4242; // The port for the client to connect to
-	private boolean successfulLogin = false;
 	GUI gui;
 	
 	// Buttons
@@ -64,8 +63,7 @@ public class GUI extends JComponent implements Runnable {
 	public GUI() {
 		// Creating a new client and passing it preset info to connect
 		try {
-			// this.client = new Client(hostname, portNumber);
-			profile = new Profile("AJohnson132490", "Lets", "Austin", "6841 Tadpole Ct");
+			this.client = new Client(hostname, portNumber);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "There was an issue connecting to the server!", "ERROR",
 					JOptionPane.ERROR_MESSAGE);
@@ -79,20 +77,27 @@ public class GUI extends JComponent implements Runnable {
 			if (e.getSource() == signInButton) {
 				try {
 					profile = client.signIn(usernameField.getText(), passwordField.getText());
-					successfulLogin = true;
+					profilePage();
 				} catch (UserNotFoundError e1) {
 					JOptionPane.showMessageDialog(null, "Username or password is incorrect!\nPlease Try again!", "ERROR",
 							JOptionPane.ERROR_MESSAGE);
 					e1.printStackTrace();
 				}
+
 			}
 			if (e.getSource() == newAccountButton) {
 				newAccountPage();
 			}
 			if (e.getSource() == registerButton) {
 				if (passwordField.getText().equals(verifyPassword.getText())) {
-					//profile = new Profile(client.createUser(usernameField.getText(), passwordField.getText(),
-					// nameField.getText(), contactInformationField.getText()));
+					try {
+						client.createProfile(usernameField.getText(), passwordField.getText(),
+								nameField.getText(), contactInformationField.getText());
+						profile = new Profile(usernameField.getText(), passwordField.getText(),
+								nameField.getText(), contactInformationField.getText());
+					} catch (UserNotFoundError userNotFoundError) {
+						userNotFoundError.printStackTrace();
+					}
 					signInPage();
 				}
 				else {
@@ -109,7 +114,6 @@ public class GUI extends JComponent implements Runnable {
 			}
 		}
 	};
-	
 	ActionListener menuBarListener = new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == createAccount) {
@@ -149,11 +153,17 @@ public class GUI extends JComponent implements Runnable {
 		c.gridy = 4;
 		signInButton.addActionListener(actionListener);
 		frame.add(signInButton, c);
+		signInButton.addActionListener(e -> {
+			frame.dispose();
+		});
 		
 		c.gridx = 0;
 		c.gridy = 5;
 		newAccountButton.addActionListener(actionListener);
 		frame.add(newAccountButton, c);
+		newAccountButton.addActionListener(e -> {
+			frame.dispose();
+		});
 		
 		// Making the frame visible
 		frame.setSize(300, 200);
@@ -487,13 +497,7 @@ public class GUI extends JComponent implements Runnable {
 	
 	public void run() {
 		// Running the sign in page
-		//signInPage();
-		
-		//== false will be removed once client is done
-		if (successfulLogin == false) {
-			profilePage();
-		}
-		
+		signInPage();
 	}
 	
 	public static void main(String[] args) {
