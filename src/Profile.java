@@ -22,6 +22,7 @@ public class Profile implements Serializable {
     
     //private Image profilePicture;
     
+    private ArrayList<Profile> sentFriendRequests;  //List of profiles that the user has sent friend requests to
     private ArrayList<String> likesAndInterests;    //User's likes and interests -- potentially have size cap
     private ArrayList<Profile> friendsList;         //User's friends list
     private ArrayList<Profile> friendRequestList;   //User's list of friend requests
@@ -44,6 +45,7 @@ public class Profile implements Serializable {
         this.privacySetting = "Public";
         this.aboutMe = "";
         
+        this.sentFriendRequests = new ArrayList<Profile>();
         this.likesAndInterests = new ArrayList<String>();
         this.friendsList = new ArrayList<Profile>();
         this.friendRequestList = new ArrayList<Profile>();
@@ -51,6 +53,7 @@ public class Profile implements Serializable {
     
     /**
      * Copy consturctor for a Profile object
+     * 
      * @param toCopy Profile object to be copied
      */
     public Profile (Profile toCopy) {
@@ -60,6 +63,7 @@ public class Profile implements Serializable {
         this.contactInformation = toCopy.getContactInformation();
         this.privacySetting = toCopy.getPrivacySetting();
         this.aboutMe = toCopy.getAboutMe();
+        this.sentFriendRequests = toCopy.getSentFriendRequests();
         this.likesAndInterests = toCopy.getLikesAndInterests();
         this.friendsList = toCopy.getFriendsList();
         this.friendRequestList = toCopy.getFriendRequestList();
@@ -251,6 +255,7 @@ public class Profile implements Serializable {
     
     /**
      * Gets the user's bio
+     * 
      * @return the user's bio
      */
     public String getAboutMe() {
@@ -259,6 +264,7 @@ public class Profile implements Serializable {
     
     /**
      * Sets the user's bio
+     * 
      * @param aboutMe bio to be set
      */
     public void setAboutMe(String aboutMe) {
@@ -282,4 +288,47 @@ public class Profile implements Serializable {
                 p.getContactInformation().equals(getContactInformation()) &&
                 p.getName().equals(getName());
     }
+
+    /**
+     * Returns the list of friend requests that the user has sent.
+     * 
+     * @return ArrayList of sent friend requests
+     */
+    public ArrayList<Profile> getSentFriendRequests() {
+        return this.sentFriendRequests();
+    }
+
+    /**
+     * Adds a profile to the user's sent friend requests list if the given profile does not already have a pending
+     * friend request
+     *
+     * @param profile profile to be added
+     * @return true if the friend request was successfully added, false if there was already a pending friend request
+     */
+    public boolean addSentFriendRequest(Profile profile) {
+        if (!this.sentFriendRequests.contains(profile)) {
+            this.sentFriendRequests.add(profile);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Removes a profile from the user's sent friend requests list if the given profile has a pending
+     * friend request with the user
+     *
+     * @param profile profile to be removed
+     * @return true if the profile was successfully removed, false if there was not a pending friend request
+     */
+    public boolean removeSentFriendRequest(Profile profile) {
+        if (this.sentFriendRequests.contains(profile)) {
+            this.sentFriendRequests.remove(profile);
+            return true;
+        }
+        return false;
+    }
+    
+    
+    
+    
 }
