@@ -1,3 +1,4 @@
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.io.Serializable;
 
@@ -10,27 +11,28 @@ import java.io.Serializable;
  * @version 22 November 2020
  */
 public class Profile implements Serializable {
-    
+
     //possible static default profile picture
-    
+
     private String username;            //Unique username
     private String password;            //User's password
     private String name;                //Profile owner's name
     private String privacySetting;      //Privacy setting - either "Public", "Private", or "Protected"
     private String contactInformation;  //User's contact information -- potentially change to fixed size array
     private String aboutMe;             //User's bio to be displayed on profile
-    
-    //private Image profilePicture;
-    
+
+    private BufferedImage profilePicture;   //User's profile picture
+
     private ArrayList<Profile> sentFriendRequests;  //List of profiles that the user has sent friend requests to
     private ArrayList<String> likesAndInterests;    //User's likes and interests -- potentially have size cap
     private ArrayList<Profile> friendsList;         //User's friends list
     private ArrayList<Profile> friendRequestList;   //User's list of friend requests
-    
+
     /**
      * Constructor for a Profile object. Takes parameters for username, password, name, and contact information.
-     * Sets privacy setting to public, aboutMe to an empty String, and initializes ArrayLists
-     * for likes and interests, friends list, and friend requests list.
+     * Sets privacy setting to public, aboutMe to an empty String, profile picture to the default image,
+     * and initializes ArrayLists for likes and interests, friends list, sent friend requests,
+     * and friend requests list.
      *
      * @param username           username to be set
      * @param password           password to be set
@@ -44,19 +46,21 @@ public class Profile implements Serializable {
         this.contactInformation = contactInformation;
         this.privacySetting = "Public";
         this.aboutMe = "";
-        
+
+        this.profilePicture = null;
+
         this.sentFriendRequests = new ArrayList<Profile>();
         this.likesAndInterests = new ArrayList<String>();
         this.friendsList = new ArrayList<Profile>();
         this.friendRequestList = new ArrayList<Profile>();
     }
-    
+
     /**
-     * Copy consturctor for a Profile object
-     * 
+     * Copy constructor for a Profile object
+     *
      * @param toCopy Profile object to be copied
      */
-    public Profile (Profile toCopy) {
+    public Profile(Profile toCopy) {
         this.username = toCopy.getName();
         this.password = toCopy.getPassword();
         this.name = toCopy.getName();
@@ -67,8 +71,9 @@ public class Profile implements Serializable {
         this.likesAndInterests = toCopy.getLikesAndInterests();
         this.friendsList = toCopy.getFriendsList();
         this.friendRequestList = toCopy.getFriendRequestList();
+        this.profilePicture = toCopy.getProfilePicture();
     }
-    
+
     /**
      * Gets the profile's username
      *
@@ -77,7 +82,7 @@ public class Profile implements Serializable {
     public String getUsername() {
         return username;
     }
-    
+
     /**
      * Sets the profile's username
      *
@@ -86,7 +91,7 @@ public class Profile implements Serializable {
     public void setUsername(String username) {
         this.username = username;
     }
-    
+
     /**
      * Gets the profile's password
      *
@@ -95,7 +100,7 @@ public class Profile implements Serializable {
     public String getPassword() {
         return password;
     }
-    
+
     /**
      * Sets the profile's password
      *
@@ -104,7 +109,7 @@ public class Profile implements Serializable {
     public void setPassword(String password) {
         this.password = password;
     }
-    
+
     /**
      * Gets the profile owner's name
      *
@@ -113,7 +118,7 @@ public class Profile implements Serializable {
     public String getName() {
         return name;
     }
-    
+
     /**
      * Sets the profile owner's name
      *
@@ -122,7 +127,7 @@ public class Profile implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     /**
      * Gets the profile's privacy setting
      *
@@ -131,7 +136,7 @@ public class Profile implements Serializable {
     public String getPrivacySetting() {
         return privacySetting;
     }
-    
+
     /**
      * Sets the profile's privacy setting
      *
@@ -140,7 +145,7 @@ public class Profile implements Serializable {
     public void setPrivacySetting(String privacySetting) {
         this.privacySetting = privacySetting;
     }
-    
+
     /**
      * Gets the user's contact information
      *
@@ -149,7 +154,7 @@ public class Profile implements Serializable {
     public String getContactInformation() {
         return contactInformation;
     }
-    
+
     /**
      * Sets the user's contact information
      *
@@ -158,7 +163,7 @@ public class Profile implements Serializable {
     public void setContactInformation(String contactInformation) {
         this.contactInformation = contactInformation;
     }
-    
+
     /**
      * Gets the user's likes and interests
      *
@@ -167,7 +172,7 @@ public class Profile implements Serializable {
     public ArrayList<String> getLikesAndInterests() {
         return likesAndInterests;
     }
-    
+
     /**
      * Sets the users likes and interests
      *
@@ -176,7 +181,7 @@ public class Profile implements Serializable {
     public void setLikesAndInterests(ArrayList<String> likesAndInterests) {
         this.likesAndInterests = likesAndInterests;
     }
-    
+
     /**
      * Gets the user's friends list
      *
@@ -185,7 +190,7 @@ public class Profile implements Serializable {
     public ArrayList<Profile> getFriendsList() {
         return friendsList;
     }
-    
+
     /**
      * Adds a friend to the user's friends list if the two profiles are not already friends
      *
@@ -199,7 +204,7 @@ public class Profile implements Serializable {
         }
         return false;
     }
-    
+
     /**
      * Removes a profile from the user's friends list if the two profiles are friends
      *
@@ -213,7 +218,7 @@ public class Profile implements Serializable {
         }
         return false;
     }
-    
+
     /**
      * Gets the user's friend request list
      *
@@ -222,7 +227,7 @@ public class Profile implements Serializable {
     public ArrayList<Profile> getFriendRequestList() {
         return friendRequestList;
     }
-    
+
     /**
      * Adds a profile to the user's friend request list if the given profile does not already have a pending
      * friend request
@@ -237,7 +242,7 @@ public class Profile implements Serializable {
         }
         return false;
     }
-    
+
     /**
      * Removes a profile from the user's friend request list if the given profile has a pending
      * friend request with the user
@@ -252,25 +257,25 @@ public class Profile implements Serializable {
         }
         return false;
     }
-    
+
     /**
      * Gets the user's bio
-     * 
+     *
      * @return the user's bio
      */
     public String getAboutMe() {
         return this.aboutMe;
     }
-    
+
     /**
      * Sets the user's bio
-     * 
+     *
      * @param aboutMe bio to be set
      */
     public void setAboutMe(String aboutMe) {
         this.aboutMe = aboutMe;
     }
-    
+
     /**
      * returns true if username, password, contact info, and name are all equal
      *
@@ -281,7 +286,7 @@ public class Profile implements Serializable {
         if (!(o instanceof Profile)) {
             return false;
         }
-        
+
         Profile p = (Profile) o;
         return p.getUsername().equals(getUsername()) &&
                 p.getPassword().equals(getPassword()) &&
@@ -291,7 +296,7 @@ public class Profile implements Serializable {
 
     /**
      * Returns the list of friend requests that the user has sent.
-     * 
+     *
      * @return ArrayList of sent friend requests
      */
     public ArrayList<Profile> getSentFriendRequests() {
@@ -327,8 +332,24 @@ public class Profile implements Serializable {
         }
         return false;
     }
-    
-    
-    
-    
+
+    /**
+     * Gets the user's profile picture
+     *
+     * @return user's profile picture
+     */
+    public BufferedImage getProfilePicture() {
+        return this.profilePicture;
+    }
+
+    /**
+     * Sets the user's profile picture
+     *
+     * @param profilePicture profile picture to be set
+     */
+    public void setProfilePicture(BufferedImage profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
+
 }
