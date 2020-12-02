@@ -295,7 +295,7 @@ public class Profile implements Serializable {
      * @return ArrayList of sent friend requests
      */
     public ArrayList<Profile> getSentFriendRequests() {
-        return this.sentFriendRequests();
+        return this.sentFriendRequests;
     }
 
     /**
