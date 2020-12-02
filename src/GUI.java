@@ -105,7 +105,6 @@ public class GUI extends JComponent implements Runnable {
 					JOptionPane.showMessageDialog(null, "Passwords do not match!", "ERROR",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
-				
 			}
 			if (e.getSource() == addFriend) { // Change button?
 				// friendList();
