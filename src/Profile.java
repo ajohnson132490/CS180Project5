@@ -1,10 +1,8 @@
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
-import java.io.Serializable;
 
 /**
  * Profile
@@ -16,10 +14,7 @@ import java.io.Serializable;
  */
 public class Profile implements Serializable {
 
-
     private static final long serialVersionUID = 1L;
-
-    //possible static default profile picture
 
     private String username;            //Unique username
     private String password;            //User's password
@@ -27,6 +22,17 @@ public class Profile implements Serializable {
     private String privacySetting;      //Privacy setting - either "Public", "Private", or "Protected"
     private String contactInformation;  //User's contact information -- potentially change to fixed size array
     private String aboutMe;             //User's bio to be displayed on profile
+
+    private static transient BufferedImage defaultProfilePicture;
+
+    //Default profile picture if user has no profile picture
+    static {
+        try {
+            defaultProfilePicture = ImageIO.read(new File("BetterBookDefaultProfilePicture.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private transient BufferedImage profilePicture;   //User's profile picture
     private byte[] profilePictureRawData;   //Data for profile picture that can be serialized
@@ -55,8 +61,13 @@ public class Profile implements Serializable {
         this.privacySetting = "Public";
         this.aboutMe = "";
 
-        this.profilePicture = null;
-        this.profilePictureRawData = null;
+        this.profilePicture = defaultProfilePicture;
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            ImageIO.write(this.profilePicture, "png", baos);
+            this.profilePictureRawData = baos.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         this.sentFriendRequests = new ArrayList<Profile>();
         this.likesAndInterests = new ArrayList<String>();
