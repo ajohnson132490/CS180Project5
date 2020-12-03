@@ -1,4 +1,8 @@
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.io.Serializable;
 
@@ -21,7 +25,8 @@ public class Profile implements Serializable {
     private String contactInformation;  //User's contact information -- potentially change to fixed size array
     private String aboutMe;             //User's bio to be displayed on profile
 
-    private BufferedImage profilePicture;   //User's profile picture
+    private transient BufferedImage profilePicture;   //User's profile picture
+    private byte[] profilePictureRawData;   //Data for profile picture that can be serialized
 
     private ArrayList<Profile> sentFriendRequests;  //List of profiles that the user has sent friend requests to
     private ArrayList<String> likesAndInterests;    //User's likes and interests -- potentially have size cap
@@ -48,6 +53,7 @@ public class Profile implements Serializable {
         this.aboutMe = "";
 
         this.profilePicture = null;
+        this.profilePictureRawData = null;
 
         this.sentFriendRequests = new ArrayList<Profile>();
         this.likesAndInterests = new ArrayList<String>();
@@ -334,21 +340,36 @@ public class Profile implements Serializable {
     }
 
     /**
-     * Gets the user's profile picture
+     * First ensures that the raw image data and profile picture correspond,
+     * then gets the user's profile picture
      *
      * @return user's profile picture
      */
     public BufferedImage getProfilePicture() {
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(this.profilePictureRawData)) {
+            this.profilePicture = ImageIO.read(bais);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return this.profilePicture;
     }
 
     /**
-     * Sets the user's profile picture
+     * Sets the user's profile picture, and then fills out the raw image data to correspond for
+     * serialization
      *
      * @param profilePicture profile picture to be set
      */
     public void setProfilePicture(BufferedImage profilePicture) {
         this.profilePicture = profilePicture;
+
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            ImageIO.write(this.profilePicture, "png", baos);
+            this.profilePictureRawData = baos.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 
