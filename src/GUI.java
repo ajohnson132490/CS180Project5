@@ -1,6 +1,7 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +19,8 @@ import java.util.concurrent.ExecutionException;
  *
  * https://bit.ly/2KF8T36
  * https://docs.oracle.com/javase/tutorial/uiswing/layout/gridbag.html
+ * https://www.tutorialspoint.com/how-to-create-a-jlabel-with-an-image-icon-in-java
+ * https://stackoverflow.com/questions/16343098/resize-a-picture-to-fit-a-jlabel
  *
  * @author Austin Johnson | CS18000 Project 5 | Group 007-2
  * @version 25 November 2020
@@ -61,6 +64,7 @@ public class GUI extends JComponent implements Runnable {
     JTextField contactInformationField = new JTextField("Email or Phone #");
     JTextField searchField = new JTextField("Enter a Username:");
     JTextField interests[] = new JTextField[5];
+    JButton editPictureButton = new JButton("Edit Profile Picture");
 
     // Labels
     JLabel username;
@@ -69,6 +73,13 @@ public class GUI extends JComponent implements Runnable {
     JLabel aboutMe = new JLabel();
     JLabel privacySetting;
     JLabel profilePicture;
+
+    // Profile Picture
+    File file;
+    JFileChooser fileChooser;
+    int chooserResponse;
+    BufferedImage image;
+    Image resizedImage;
 
     /**
      * This is the only constructor, it creates a default client object that connects
@@ -154,7 +165,6 @@ public class GUI extends JComponent implements Runnable {
             }
         }
     };
-
 
     /**
      * Allows the user to sign in
@@ -264,13 +274,11 @@ public class GUI extends JComponent implements Runnable {
             }
         });
 
-
         // Making the frame visible
         frame.setSize(300, 400);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
-
     }
 
     /**
@@ -310,8 +318,43 @@ public class GUI extends JComponent implements Runnable {
         aboutMeField.setPreferredSize(new Dimension(200, 30));
         c.gridy = 10;
         frame.add(aboutMeField, c);
+      
+        c.gridy = 12;
+        frame.add(editPictureButton, c);
+        editPictureButton.addActionListener(e -> {
+            fileChooser = new JFileChooser();
+            FileNameExtensionFilter filter = new FileNameExtensionFilter(".jpg, .png, .jpeg", "jpg", "png", "jpeg");
+            fileChooser.setFileFilter(filter);
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            chooserResponse = fileChooser.showOpenDialog(null);
+            if (chooserResponse == JFileChooser.APPROVE_OPTION) {
+                file = fileChooser.getSelectedFile();
+                try {
+                    image = ImageIO.read(file);
+                    Profile newProfile = new Profile(profile);
+                    newProfile.setProfilePicture(image);
+                    System.out.println("This is the new pfp: " + newProfile.getProfilePicture()); //test
+                    try {
+                        client.updateProfile(profile, newProfile);
+                        System.out.println("Client updated"); //test
+                    } catch (UserNotFoundError e1) {
+                        JOptionPane.showMessageDialog(null, "Error updating profile!",
+                                "ERROR", JOptionPane.INFORMATION_MESSAGE);
+                        frame.dispose();
+                        editAccountPage();
+                    }
+                } catch (IOException f) {
+                    JOptionPane.showMessageDialog(null, "Invalid file format!", "ERROR",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    frame.dispose();
+                    editAccountPage();
+                }
+            }
+            profilePage();
+            frame.dispose();
+        });
 
-        c.gridx = 0;
+        c.gridx = 1;
         c.gridy = 12;
         confirmButton.addActionListener(menuBarListener);
         frame.add(confirmButton, c);
@@ -335,13 +378,11 @@ public class GUI extends JComponent implements Runnable {
             frame.dispose();
         });
 
-
         // Making the frame visible
         frame.setSize(300, 400);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
-
     }
 
     /**
@@ -417,6 +458,11 @@ public class GUI extends JComponent implements Runnable {
         });
         confirmInterestsButton.addActionListener(e ->{
             if (e.getSource() == confirmInterestsButton) {
+                frame.dispose();
+            }
+        });
+        editPictureButton.addActionListener(e -> {
+            if (e.getSource() == editPictureButton) {
                 frame.dispose();
             }
         });
@@ -518,22 +564,16 @@ public class GUI extends JComponent implements Runnable {
         JPanel info = new JPanel();
         info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
         info.setBorder(new EmptyBorder(15,15,15,15));
-        info.setMinimumSize(new Dimension(450, 250));
-        info.setSize(new Dimension(450, 250));
+        info.setMinimumSize(new Dimension(450, 275));
+        info.setSize(new Dimension(450, 275));
         infoBuffer.add(info);
 
         // Creating the profile picture and JLabel
-        BufferedImage image = null;
-        try {
-            image = ImageIO.read(new File("imagination.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        profilePicture = new JLabel();
+        resizedImage = profile.getProfilePicture().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+        System.out.println("This is the profile picture: " + profile.getProfilePicture());
 
-        // Resizing the image down to a specific width and height in order to fit in the JPanel
-        assert image != null;
-        Image resizedImage = image.getScaledInstance(80, 60, Image.SCALE_SMOOTH);
+        profilePicture = new JLabel();
+      
         ImageIcon icon = new ImageIcon(resizedImage);
         profilePicture.setIcon(icon);
 
@@ -745,7 +785,6 @@ public class GUI extends JComponent implements Runnable {
                 currentRequest.add(confirmFriendRequest[i]);
                 currentRequest.add(denyFriendRequest[i]);
                 requestPanel.add(currentRequest);
-
             }
         }
         //Adding the friend buffer and panel to the display at gridx 1 gridy 0
