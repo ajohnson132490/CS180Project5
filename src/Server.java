@@ -35,12 +35,20 @@ public class Server implements Runnable {
      * It is called once a client connects to the server.
      */
     public void run() {
+        // Starts reading and writing streams
+        ObjectOutputStream objectWriter;
+        ObjectInputStream reader;
+        try {
+            objectWriter = new ObjectOutputStream(csock.getOutputStream());
+            reader = new ObjectInputStream(csock.getInputStream());
+        } catch (Exception e) {
+            System.out.println("Error Initializing streams.");
+            return;
+        }
+
         while (true) {
             System.out.println("Client connected!");
             try {
-                // Starts reading and writing streams
-                ObjectInputStream reader = new ObjectInputStream(csock.getInputStream());
-                ObjectOutputStream objectWriter = new ObjectOutputStream(csock.getOutputStream());
 
                 // Reads message from client
                 // As per protocol, first message is a String

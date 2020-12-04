@@ -75,7 +75,7 @@ public class GUI extends JComponent implements Runnable {
     JLabel profilePicture;
 
     // Profile Picture
-    File file = new File("imagination.png");
+    File file;
     JFileChooser fileChooser;
     int chooserResponse;
     BufferedImage image;
@@ -318,7 +318,7 @@ public class GUI extends JComponent implements Runnable {
         aboutMeField.setPreferredSize(new Dimension(200, 30));
         c.gridy = 10;
         frame.add(aboutMeField, c);
-
+      
         c.gridy = 12;
         frame.add(editPictureButton, c);
         editPictureButton.addActionListener(e -> {
@@ -573,8 +573,7 @@ public class GUI extends JComponent implements Runnable {
         System.out.println("This is the profile picture: " + profile.getProfilePicture());
 
         profilePicture = new JLabel();
-
-        // Resizing the image down to a specific width and height in order to fit in the JPanel
+      
         ImageIcon icon = new ImageIcon(resizedImage);
         profilePicture.setIcon(icon);
 
