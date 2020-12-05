@@ -82,7 +82,7 @@ public class GUI extends JComponent implements Runnable {
     JLabel profilePicture;
 
     // Profile Picture
-    File file;
+    File file = new File("imagination.png");
     JFileChooser fileChooser;
     int chooserResponse;
     BufferedImage image;
@@ -327,31 +327,34 @@ public class GUI extends JComponent implements Runnable {
         aboutMeField.setPreferredSize(new Dimension(200, 30));
         c.gridy = 10;
         frame.add(aboutMeField, c);
-      
+
         c.gridy = 12;
         frame.add(editPictureButton, c);
         editPictureButton.addActionListener(e -> {
             fileChooser = new JFileChooser();
-            FileNameExtensionFilter filter = new FileNameExtensionFilter(".jpg, .png, .jpeg", "jpg", "png", "jpeg");
+            FileNameExtensionFilter filter = new FileNameExtensionFilter(".jpg, .png, .jpeg",
+                    "jpg", "png", "jpeg");
             fileChooser.setFileFilter(filter);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-            chooserResponse = fileChooser.showOpenDialog(null);
+            chooserResponse = fileChooser.showOpenDialog(frame);
             if (chooserResponse == JFileChooser.APPROVE_OPTION) {
                 file = fileChooser.getSelectedFile();
                 try {
                     image = ImageIO.read(file);
                     Profile newProfile = new Profile(profile);
+                    profile.setProfilePicture(image);
                     newProfile.setProfilePicture(image);
-                    System.out.println("This is the new pfp: " + newProfile.getProfilePicture()); //test
-                    try {
-                        client.updateProfile(profile, newProfile);
-                        System.out.println("Client updated"); //test
-                    } catch (UserNotFoundError e1) {
-                        JOptionPane.showMessageDialog(null, "Error updating profile!",
-                                "ERROR", JOptionPane.INFORMATION_MESSAGE);
-                        frame.dispose();
-                        editAccountPage();
-                    }
+                    client.sendProfiles();
+//                    try {
+//                        client.updateProfile(profile, newProfile);
+//                        System.out.println("Client updated"); //test
+//                        client.receiveProfiles();
+//                    } catch (UserNotFoundError e1) {
+//                        JOptionPane.showMessageDialog(null, "Error updating profile picture!",
+//                                "ERROR", JOptionPane.INFORMATION_MESSAGE);
+//                        frame.dispose();
+//                        editAccountPage();
+//                    }
                 } catch (IOException f) {
                     JOptionPane.showMessageDialog(null, "Invalid file format!", "ERROR",
                             JOptionPane.INFORMATION_MESSAGE);
@@ -359,8 +362,8 @@ public class GUI extends JComponent implements Runnable {
                     editAccountPage();
                 }
             }
-            profilePage();
             frame.dispose();
+            profilePage();
         });
 
         c.gridx = 1;
@@ -372,8 +375,8 @@ public class GUI extends JComponent implements Runnable {
             if (passwordField.getText().equals(verifyPassword.getText())) {
                 profile.setPassword(passwordField.getText());
             } else {
-                JOptionPane.showMessageDialog(null, "Passwords do not match!\nPlease try again", "Passwords Do not " +
-                        "match!", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Passwords do not match!\nPlease try again",
+                        "Passwords Do not match!", JOptionPane.INFORMATION_MESSAGE);
                 frame.dispose();
                 editAccountPage();
             }
@@ -773,11 +776,11 @@ public class GUI extends JComponent implements Runnable {
         infoBuffer.add(info);
 
         // Creating the profile picture and JLabel
-        resizedImage = currentProfile.getProfilePicture().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-        System.out.println("This is the profile picture: " + currentProfile.getProfilePicture());
+        resizedImage = profile.getProfilePicture().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
 
         profilePicture = new JLabel();
-      
+
+        // Resizing the image down to a specific width and height in order to fit in the JPanel
         ImageIcon icon = new ImageIcon(resizedImage);
         profilePicture.setIcon(icon);
 
@@ -1033,6 +1036,7 @@ public class GUI extends JComponent implements Runnable {
                 currentRequest.add(denyFriendRequest[i]);
 
                 requestPanel.add(currentRequest);
+
             }
         }
 
