@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException;
  * https://docs.oracle.com/javase/tutorial/uiswing/layout/gridbag.html
  * https://www.tutorialspoint.com/how-to-create-a-jlabel-with-an-image-icon-in-java
  * https://stackoverflow.com/questions/16343098/resize-a-picture-to-fit-a-jlabel
+ * https://stackoverflow.com/questions/13334198/java-custom-buttons-in-showinputdialog
  *
  * @author Austin Johnson | CS18000 Project 5 | Group 007-2
  * @version 25 November 2020
@@ -46,6 +47,7 @@ public class GUI extends JComponent implements Runnable {
     JButton confirmInterestsButton = new JButton("Confirm");
     JButton confirmFriendRequest[];
     JButton denyFriendRequest[];
+    JButton refresh = new JButton("Refresh");
 
     // Menu Bar
     JMenu accountMenu = new JMenu("Account");
@@ -58,6 +60,7 @@ public class GUI extends JComponent implements Runnable {
     JMenuItem[] allUsers;
 
     JMenu pendingFriendRequests = new JMenu("Friend Requests");
+    JMenuItem[] allRequests;
 
     // Text fields
     JTextField usernameField = new JTextField("Username");
@@ -483,6 +486,8 @@ public class GUI extends JComponent implements Runnable {
     /**
      * Allows users to view all users and see their profile
      * Also allows users to send a friend request to any user
+     *
+     * @param menuBar the menu bar to add the profiles to
      */
     public void viewAllProfiles(JMenuBar menuBar) {
         //Getting all the profiles
@@ -491,7 +496,17 @@ public class GUI extends JComponent implements Runnable {
         //Adding all the profiles to the list
         for (int i = 0; i < client.getBetterBookProfiles().size(); i++) {
             allUsers[i] = new JMenuItem(client.getBetterBookProfiles().get(i).getUsername());
-            allUsersMenu.add(allUsers[i]);
+            if (allUsersMenu.getMenuComponentCount() > 0) {
+                for (int k = 0; k < client.getBetterBookProfiles().size(); k++) {
+                    if (allUsersMenu.getItem(k).equals(allUsers[k])) {
+                        allUsersMenu.add(allUsers[i]);
+                        System.out.println(allUsersMenu.getItem(k).getText());
+                        System.out.println(allUsers[i].getText());
+                    }
+                }
+            } else {
+                allUsersMenu.add(allUsers[i]);
+            }
             int finalI = i;
             allUsers[i].addActionListener(e -> {
                 if (e.getSource() == allUsers[finalI]) {
@@ -531,6 +546,7 @@ public class GUI extends JComponent implements Runnable {
                                                         "Request Sent",
                                                         JOptionPane.OK_OPTION);
                                                 profile.addSentFriendRequest(client.getBetterBookProfiles().get(finalI));
+                                                profile.addFriendRequest(client.getBetterBookProfiles().get(finalI));
                                                 break;
                                         }
                                     }
@@ -572,6 +588,7 @@ public class GUI extends JComponent implements Runnable {
                             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                             content.setBackground(Color.decode("#246EB9"));
                             frame.setVisible(true);
+                            break;
 
                     }
                 }
@@ -579,6 +596,55 @@ public class GUI extends JComponent implements Runnable {
         }
         //Adding the users to the menubar
         menuBar.add(allUsersMenu);
+        client.sendProfiles();
+    }
+
+    /**
+     * Allows users to see all their pending friend requests
+     *
+     * @param menuBar the menu bar to add the pending requests to
+     */
+    public void viewPendingFriendRequest(JMenuBar menuBar) {
+        //Getting all the pending requests
+        client.receiveProfiles();
+        ArrayList<Profile> requests = profile.getSentFriendRequests();
+        allRequests = new JMenuItem[requests.size()];
+        for (int i = 0; i < requests.size(); i++) {
+            //Adding all the requests to the pending menu
+            allRequests[i] = new JMenuItem(requests.get(i).getUsername());
+            pendingFriendRequests.add(allRequests[i]);
+
+            //Adding a listener for being clicked
+            int finalI = i;
+            allRequests[i].addActionListener(e -> {
+                if (e.getSource() == allRequests[finalI]) {
+                    //Creating some options when you click on the name of a user
+                    Object[] options1 = {"Revoke friend request",
+                            "Cancel"};
+
+                    int selection = JOptionPane.showOptionDialog(null,
+                            "What would you like to do?",
+                            requests.get(finalI).getUsername(),
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.PLAIN_MESSAGE,
+                            null,
+                            options1,
+                            null);
+
+                    switch (selection) {
+                        case 0:
+                            //Revoke the friend request
+                            profile.removeSentFriendRequest(requests.get(finalI));
+                            pendingFriendRequests.remove(allRequests[finalI]);
+                            break;
+                        case 1:
+                            break;
+                    }
+                }
+            });
+        }
+        menuBar.add(pendingFriendRequests);
+        client.sendProfiles();
     }
 
     /**
@@ -619,6 +685,7 @@ public class GUI extends JComponent implements Runnable {
 
         //Adding a place to view all users
         viewAllProfiles(menuBar);
+        viewPendingFriendRequest(menuBar);
 
         // Add Space so that the search Bar is on the left side
         menuBar.add(Box.createHorizontalGlue());
@@ -673,14 +740,24 @@ public class GUI extends JComponent implements Runnable {
             }
         });
 
+        menuBar.add(refresh);
+        refresh.addActionListener(e -> {
+            if (e.getSource() == refresh) {
+                frame.dispose();
+                profilePage();
+            }
+        });
         // Adding the menuBar to the profile Page
         frame.setJMenuBar(menuBar);
     }
 
     /**
      * This displays the users username, real name, contact information, and privacy setting
+     *
+     * @param currentProfile the profile that is currently being viewed
      */
     public JPanel displayUserInformation(Profile currentProfile) {
+        client.receiveProfiles();
         //Creating info buffer for precise location
         JPanel infoBuffer = new JPanel();
         infoBuffer.setLayout(new BoxLayout(infoBuffer, BoxLayout.Y_AXIS));
@@ -744,6 +821,8 @@ public class GUI extends JComponent implements Runnable {
         info.add(Box.createGlue());
         info.add(privacySetting);
 
+        client.sendProfiles();
+
         // Showing the panel
         info.setVisible(true);
         info.setBackground(Color.decode("#F0CEA0"));
@@ -752,8 +831,11 @@ public class GUI extends JComponent implements Runnable {
 
     /**
      * This displays the users friend list in the order that it is stored
+     *
+     * @param currentProfile the profile that is currently being viewed
      */
     public JPanel displayUserFriendList(Profile currentProfile) {
+        client.receiveProfiles();
         //Creating friend buffer for precise position
         JPanel friendPanelBuffer = new JPanel();
         friendPanelBuffer.setLayout(new BoxLayout(friendPanelBuffer, BoxLayout.Y_AXIS));
@@ -784,6 +866,9 @@ public class GUI extends JComponent implements Runnable {
                 internalFriendPanel.add(currentFriend);
             }
         }
+
+        client.sendProfiles();
+
         //Adding the friend buffer and panel to the display at gridx 1 gridy 0
         internalFriendPanel.setVisible(true);
         internalFriendPanel.setBackground(Color.decode("#F0CEA0"));
@@ -793,8 +878,11 @@ public class GUI extends JComponent implements Runnable {
     /**
      * This displays the users interest list, substituting for a button if no interests
      * are listed
+     *
+     * @param currentProfile the profile that is currently being viewed
      */
     public JPanel displayUserInterestList(Profile currentProfile) {
+        client.receiveProfiles();
         //Creating a buffer for the interests panel
         JPanel interestsBuffer = new JPanel();
         interestsBuffer.setLayout(new BoxLayout(interestsBuffer, BoxLayout.Y_AXIS));
@@ -819,6 +907,7 @@ public class GUI extends JComponent implements Runnable {
             JButton emptyInterestsList = new JButton("Add likes and interests");
             emptyInterestsList.setBorder(new EmptyBorder(15, 15, 15, 15));
             emptyInterestsList.setFont(new Font("Verdana", Font.PLAIN, 15));
+            emptyInterestsList.setContentAreaFilled(true);
 
             //Adding that button to the panel
             interestsPanel.add(emptyInterestsList);
@@ -846,6 +935,9 @@ public class GUI extends JComponent implements Runnable {
                 interestsTitle.setBorder(new EmptyBorder(15,50,15,50));
             }
         }
+
+        client.sendProfiles();
+
         //Adding the friend buffer and panel to the display at gridx 1 gridy 0
         interestsPanel.setVisible(true);
         interestsPanel.setBackground(Color.decode("#F0CEA0"));
@@ -855,8 +947,11 @@ public class GUI extends JComponent implements Runnable {
     /**
      * This displays the users pending friend requests, with a default message if
      * no requests are found
+     *
+     * @param frame the frame in which the friend requests is being viewed in
      */
     public JPanel displayPendingFriendRequests(JFrame frame) {
+        client.receiveProfiles();
         //Creating friend buffer for precise position
         JPanel friendPanelBuffer = new JPanel();
         friendPanelBuffer.setLayout(new BoxLayout(friendPanelBuffer, BoxLayout.Y_AXIS));
@@ -940,6 +1035,9 @@ public class GUI extends JComponent implements Runnable {
                 requestPanel.add(currentRequest);
             }
         }
+
+        client.sendProfiles();
+
         //Adding the friend buffer and panel to the display at gridx 1 gridy 0
         requestPanel.setVisible(true);
         requestPanel.setBackground(Color.decode("#F0CEA0"));
