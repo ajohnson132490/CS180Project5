@@ -194,7 +194,7 @@ public class Client {
     public int locateProfile(Profile p) {
         receiveProfiles();
         for (int i = 0; i < betterBookProfiles.size(); i++) {
-            if (p.equals(betterBookProfiles.get(i))) {
+            if (p.getUsername().equals(betterBookProfiles.get(i).getUsername())) {
                 return i;
             }
         }
