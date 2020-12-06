@@ -1,5 +1,4 @@
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
@@ -37,10 +36,10 @@ public class Profile implements Serializable {
     private transient BufferedImage profilePicture;   //User's profile picture
     private byte[] profilePictureRawData;   //Data for profile picture that can be serialized
 
-    private ArrayList<Profile> sentFriendRequests;  //List of profiles that the user has sent friend requests to
+    private final ArrayList<Profile> sentFriendRequests;  //List of profiles that the user has sent friend requests to
     private ArrayList<String> likesAndInterests;    //User's likes and interests -- potentially have size cap
-    private ArrayList<Profile> friendsList;         //User's friends list
-    private ArrayList<Profile> friendRequestList;   //User's list of friend requests
+    private final ArrayList<Profile> friendsList;         //User's friends list
+    private final ArrayList<Profile> friendRequestList;   //User's list of friend requests
 
     /**
      * Constructor for a Profile object. Takes parameters for username, password, name, and contact information.
@@ -60,12 +59,14 @@ public class Profile implements Serializable {
         this.contactInformation = contactInformation;
         this.privacySetting = "Public";
         this.aboutMe = "";
-
         this.profilePicture = defaultProfilePicture;
+
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             ImageIO.write(this.profilePicture, "png", baos);
             this.profilePictureRawData = baos.toByteArray();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
 
@@ -94,7 +95,8 @@ public class Profile implements Serializable {
         try {
             this.profilePicture = toCopy.getProfilePicture();
         } catch (NullPointerException e) {
-            System.out.println("Error making profile due to profile picture");
+            this.profilePicture = defaultProfilePicture;
+            System.out.println("Setting profile pic to default");
         }
         
     }
@@ -368,7 +370,10 @@ public class Profile implements Serializable {
         try (ByteArrayInputStream bais = new ByteArrayInputStream(this.profilePictureRawData)) {
             this.profilePicture = ImageIO.read(bais);
         } catch (IOException e) {
+            this.profilePicture = defaultProfilePicture;
             e.printStackTrace();
+        } catch (NullPointerException e) {
+            setProfilePicture(defaultProfilePicture);
         }
         return this.profilePicture;
     }
@@ -386,6 +391,7 @@ public class Profile implements Serializable {
             ImageIO.write(this.profilePicture, "png", baos);
             this.profilePictureRawData = baos.toByteArray();
         } catch (IOException e) {
+            this.profilePicture = defaultProfilePicture;
             e.printStackTrace();
         }
 
