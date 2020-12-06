@@ -32,8 +32,8 @@ public class GUI extends JComponent implements Runnable {
     private static final long serialVersionUID = -239376208864108143L; // Serial ID
     private Client client; // The shorthand name for the client
     Profile profile; // The current users profile
-    private String hostname = "localhost"; // The host name for the client to connect to
-    private int portNumber = 4242; // The port for the client to connect to
+    private final String hostname = "localhost"; // The host name for the client to connect to
+    private final int portNumber = 4242; // The port for the client to connect to
     GUI gui;
     ArrayList<String> interestsArrayList = new ArrayList<String>();
     
@@ -42,20 +42,19 @@ public class GUI extends JComponent implements Runnable {
     JButton signInButton = new JButton("Sign In");
     JButton newAccountButton = new JButton("Create a New Account");
     JButton registerButton = new JButton("Register");
-    JButton searchButton = new JButton("Search");
     JButton confirmButton = new JButton("Confirm");
     JButton confirmInterestsButton = new JButton("Confirm");
-    JButton confirmFriendRequest[];
-    JButton denyFriendRequest[];
+    JButton[] confirmFriendRequest;
+    JButton[] denyFriendRequest;
     JButton refresh = new JButton("Refresh");
     
     // Menu Bar
     JMenu accountMenu = new JMenu("Account");
     JMenuItem createAccount = new JMenuItem("Create a new account");
     JMenuItem editAccount = new JMenuItem("Edit your account");
+    JMenuItem editInterests = new JMenuItem("Edit your interests");
     JMenuItem deleteAccount = new JMenuItem("Delete your account");
-    JMenuItem requestList = new JMenuItem("Friend Requests");
-    
+
     JMenu allUsersMenu = new JMenu("Users");
     JMenuItem[] allUsers;
     
@@ -69,8 +68,7 @@ public class GUI extends JComponent implements Runnable {
     JTextField nameField = new JTextField("Name");
     JTextField aboutMeField = new JTextField("Tell people about yourself");
     JTextField contactInformationField = new JTextField("Email or Phone #");
-    JTextField searchField = new JTextField("Enter a Username:");
-    JTextField interests[] = new JTextField[5];
+    JTextField[] interests = new JTextField[5];
     JButton editPictureButton = new JButton("Edit Profile Picture");
     
     // Labels
@@ -133,12 +131,6 @@ public class GUI extends JComponent implements Runnable {
                             JOptionPane.INFORMATION_MESSAGE);
                 }
             }
-            if (e.getSource() == addFriend) { // Change button?
-                // friendList();
-            }
-            if (e.getSource() == requestList) {
-                // requestList();
-            }
         }
     };
     
@@ -159,6 +151,9 @@ public class GUI extends JComponent implements Runnable {
                 JOptionPane.showMessageDialog(null, "Error updating profile!", "ERROR",
                         JOptionPane.INFORMATION_MESSAGE);
             }
+        }
+        if (e.getSource() == editInterests) {
+            addInterestsPage();
         }
         
     };
@@ -203,7 +198,8 @@ public class GUI extends JComponent implements Runnable {
                 System.out.println("Tried to hit sign in too early");
                 e1.printStackTrace();
             } catch (UserNotFoundError e1) {
-                JOptionPane.showMessageDialog(null, "Username or password is incorrect!\nPlease Try again!", "ERROR",
+                JOptionPane.showMessageDialog(null,
+                        "Username or password is incorrect!\nPlease Try again!", "ERROR",
                         JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -435,6 +431,7 @@ public class GUI extends JComponent implements Runnable {
         } catch (UserNotFoundError userNotFoundError) {
             userNotFoundError.printStackTrace();
         }
+        System.out.println(profile.getFriendsList().toString());
         // Creating the frame
         JFrame frame = new JFrame("BetterBook");
         frame.setResizable(false);
@@ -540,35 +537,43 @@ public class GUI extends JComponent implements Runnable {
                                     }
                                 }
                                 if (notFriends) {
-                                    sel = JOptionPane.showConfirmDialog(null, "Would you like to send "
-                                                    + client.getBetterBookProfiles().get(finalI).getUsername() + "\na friend request?", "User found!",
+                                    sel = JOptionPane.showConfirmDialog(null,
+                                            "Would you like to send "
+                                                    + client.getBetterBookProfiles().get(finalI).getUsername() +
+                                                    "\na friend request?", "User found!",
                                             JOptionPane.YES_NO_OPTION);
                                     
                                     switch (sel) {
                                         case 0:
+                                            try {
                                             profile = client.signIn(profile.getUsername(), profile.getPassword());
                                             client.sendFriendRequest(profile, temp);
-                                            JOptionPane.showConfirmDialog(null, "Friend request sent!",
-                                                    "Request Sent",
-                                                    JOptionPane.OK_OPTION);
-                                            client.signIn(profile.getUsername(),profile.getPassword()).addFriendRequest(temp);
-                                            try {
+                                            client.signIn(profile.getUsername(),
+                                                    profile.getPassword()).addSentFriendRequest(temp);
                                                 client.updateProfile(profile, profile);
                                             } catch (UserNotFoundError userNotFoundError) {
                                                 userNotFoundError.printStackTrace();
                                             }
+                                            JOptionPane.showConfirmDialog(null,
+                                                    "Friend request sent!",
+                                                    "Request Sent",
+                                                    JOptionPane.OK_OPTION);
                                             client.sendProfiles();
+                                            viewPendingFriendRequest(menuBar);
                                             break;
                                     }
                                 }
                                 else {
-                                    JOptionPane.showConfirmDialog(null, "You are already friends with "
-                                                    + client.getBetterBookProfiles().get(finalI).getUsername(), "",
+                                    JOptionPane.showConfirmDialog(null,
+                                            "You are already friends with "
+                                                    + client.getBetterBookProfiles().get(finalI).getUsername(),
+                                            "",
                                             JOptionPane.OK_OPTION);
                                 }
                                 
                             } catch (NullPointerException | UserNotFoundError e1) {
-                                JOptionPane.showMessageDialog(null, "User not found!", "User not found!",
+                                JOptionPane.showMessageDialog(null, "User not found!",
+                                        "User not found!",
                                         JOptionPane.OK_OPTION);
                             }
                             break;
@@ -578,20 +583,26 @@ public class GUI extends JComponent implements Runnable {
                             frame.setResizable(false);
                             Container content = frame.getContentPane();
                             content.setLayout(new GridBagLayout());
-                            GridBagConstraints c = new GridBagConstraints(5, 5, 1, 1, 1.0, 1.0, GridBagConstraints.NORTHWEST,
-                                    GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
+                            GridBagConstraints c = new GridBagConstraints(5, 5, 1,
+                                    1, 1.0, 1.0, GridBagConstraints.NORTHWEST,
+                                    GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0)
+                                    , 0, 0);
                             gui = new GUI();
                             frame.add(gui, c);
                             
                             //Adding the content to the frame
-                            c.gridx = 0;
-                            c.gridy = 0;
-                            frame.add(displayUserInformation(client.getBetterBookProfiles().get(finalI)), c);
-                            c.gridx = 1;
-                            frame.add(displayUserFriendList(client.getBetterBookProfiles().get(finalI)), c);
-                            c.gridx = 0;
-                            c.gridy = -1;
-                            frame.add(displayUserInterestList(client.getBetterBookProfiles().get(finalI)), c);
+                            try {
+                                c.gridx = 0;
+                                c.gridy = 0;
+                                frame.add(displayUserInformation(client.getBetterBookProfiles().get(finalI)), c);
+                                c.gridx = 1;
+                                frame.add(displayUserFriendList(client.getBetterBookProfiles().get(finalI)), c);
+                                c.gridx = 0;
+                                c.gridy = -1;
+                                frame.add(displayUserInterestList(client.getBetterBookProfiles().get(finalI)), c);
+                            } catch (UserNotFoundError e1) {
+                                e1.printStackTrace();
+                            }
                             
                             /// Making the frame visible
                             frame.setSize(800, 600);
@@ -615,9 +626,10 @@ public class GUI extends JComponent implements Runnable {
      *
      * @param menuBar the menu bar to add the pending requests to
      */
-    public void viewPendingFriendRequest(JMenuBar menuBar) {
+    public void viewPendingFriendRequest(JMenuBar menuBar) throws UserNotFoundError {
         //Getting all the pending requests
         client.receiveProfiles();
+        profile = client.signIn(profile.getUsername(), profile.getPassword());
         ArrayList<Profile> requests = profile.getSentFriendRequests();
         allRequests = new JMenuItem[requests.size()];
         for (int i = 0; i < requests.size(); i++) {
@@ -663,13 +675,15 @@ public class GUI extends JComponent implements Runnable {
      *
      * @param frame frame to add the menu bar to
      */
-    public void createMenuBar(JFrame frame) {
+    public void createMenuBar(JFrame frame) throws UserNotFoundError {
         JMenuBar menuBar = new JMenuBar();
         // Account tab
         accountMenu.add(createAccount);
         createAccount.addActionListener(menuBarListener);
         accountMenu.add(editAccount);
         editAccount.addActionListener(menuBarListener);
+        accountMenu.add(editInterests);
+        editInterests.addActionListener(menuBarListener);
         accountMenu.add(deleteAccount);
         deleteAccount.addActionListener(e -> {
             if (e.getSource() == deleteAccount) {
@@ -698,60 +712,6 @@ public class GUI extends JComponent implements Runnable {
         viewAllProfiles(menuBar);
         viewPendingFriendRequest(menuBar);
         
-        // Add Space so that the search Bar is on the left side
-        menuBar.add(Box.createHorizontalGlue());
-        
-        /// Adding the friend Search Bar
-        // Text field
-        GridBagConstraints c = new GridBagConstraints();
-        searchField.setPreferredSize(new Dimension(200, 30));
-        searchField.setMaximumSize(searchField.getPreferredSize());
-        c.gridx = GridBagConstraints.LINE_END - 2;
-        c.gridy = 0;
-        menuBar.add(searchField, c);
-        
-        // Button
-        c.gridx = GridBagConstraints.LINE_END;
-        c.gridy = 0;
-        menuBar.add(searchButton, c);
-        searchButton.addActionListener(e ->{
-            try {
-                if (client.locateProfile(searchField.getText()) != null) {
-                    boolean notFriends = true;
-                    int selection = 0;
-                    for (int i = 0; i < profile.getFriendsList().size(); i++) {
-                        if (profile.getFriendsList().get(i).getUsername().equals(searchField.getText())) {
-                            notFriends = false;
-                        }
-                    }
-                    if (notFriends) {
-                        selection = JOptionPane.showConfirmDialog(null, "Would you like to send "
-                                        + searchField.getText() + "\na friend request?", "User found!",
-                                JOptionPane.YES_NO_OPTION);
-                        
-                        switch (selection) {
-                            case 0:
-                                client.sendFriendRequest(profile, client.locateProfile(searchField.getText()));
-                                JOptionPane.showConfirmDialog(null, "Friend request sent!",
-                                        "Request Sent",
-                                        JOptionPane.OK_OPTION);
-                                profile.addSentFriendRequest(client.locateProfile(searchField.getText()));
-                                
-                                break;
-                        }
-                    }
-                    else {
-                        JOptionPane.showConfirmDialog(null, "You are already friends with "
-                                        + searchField.getText(), "",
-                                JOptionPane.OK_OPTION);
-                    }
-                }
-            } catch (Exception e1) {
-                JOptionPane.showMessageDialog(null, "User not found!", "User not found!",
-                        JOptionPane.OK_OPTION);
-            }
-        });
-        
         menuBar.add(refresh);
         refresh.addActionListener(e -> {
             if (e.getSource() == refresh) {
@@ -768,7 +728,7 @@ public class GUI extends JComponent implements Runnable {
      *
      * @param currentProfile the profile that is currently being viewed
      */
-    public JPanel displayUserInformation(Profile currentProfile) {
+    public JPanel displayUserInformation(Profile currentProfile) throws UserNotFoundError {
         client.receiveProfiles();
         //Creating info buffer for precise location
         JPanel infoBuffer = new JPanel();
@@ -785,6 +745,7 @@ public class GUI extends JComponent implements Runnable {
         infoBuffer.add(info);
         
         // Creating the profile picture and JLabel
+        currentProfile = client.signIn(currentProfile.getUsername(), currentProfile.getPassword());
         resizedImage = currentProfile.getProfilePicture().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
         System.out.println("This is the profile picture: " + currentProfile.getProfilePicture());
         
@@ -846,7 +807,7 @@ public class GUI extends JComponent implements Runnable {
      *
      * @param currentProfile the profile that is currently being viewed
      */
-    public JPanel displayUserFriendList(Profile currentProfile) {
+    public JPanel displayUserFriendList(Profile currentProfile) throws UserNotFoundError {
         //Creating friend buffer for precise position
         JPanel friendPanelBuffer = new JPanel();
         friendPanelBuffer.setLayout(new BoxLayout(friendPanelBuffer, BoxLayout.Y_AXIS));
@@ -860,6 +821,7 @@ public class GUI extends JComponent implements Runnable {
         internalFriendPanel.setMinimumSize(new Dimension(250, 200));
         internalFriendPanel.setMaximumSize(new Dimension(250, 200));
         friendPanelBuffer.add(internalFriendPanel);
+        currentProfile = client.signIn(currentProfile.getUsername(), currentProfile.getPassword());
         ArrayList <Profile> friends = currentProfile.getFriendsList();
         
         //Default action if no friends exist
@@ -934,14 +896,14 @@ public class GUI extends JComponent implements Runnable {
                 }
             });
         } else {
-            System.out.println("test" + currentProfile.getLikesAndInterests().get(0));
             //Adding any friends that have accepted the friend request
             for (int i = 0; i < currentProfile.getLikesAndInterests().size(); i ++) {
-                JLabel currentInterest = new JLabel(currentProfile.getLikesAndInterests().get(i));
-                currentInterest.setBorder(new EmptyBorder(0, 0, 2, 0));
-                currentInterest.setFont(new Font("Verdana", Font.PLAIN, 15));
-                interestsPanel.add(currentInterest);
-                
+                if (!currentProfile.getLikesAndInterests().get(i).equals("Interest " + i + ":")) {
+                    JLabel currentInterest = new JLabel(currentProfile.getLikesAndInterests().get(i));
+                    currentInterest.setBorder(new EmptyBorder(0, 0, 2, 0));
+                    currentInterest.setFont(new Font("Verdana", Font.PLAIN, 15));
+                    interestsPanel.add(currentInterest);
+                }
                 //Setting borders to make the title and interests look nice
                 interestsPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
                 interestsTitle.setBorder(new EmptyBorder(15,50,15,50));
@@ -986,7 +948,7 @@ public class GUI extends JComponent implements Runnable {
         //Getting a local list of all the friend requests
         ArrayList <Profile> friends = client.signIn(profile.getUsername(),profile.getPassword()).getFriendRequestList();
         
-        //Default action if no friends exist
+        //Default action if no requests exist
         if (friends.size() <= 0) {
             JLabel emptyFriendList = new JLabel("<html>No Pending Friend Requests...</html>");
             emptyFriendList.setBorder(new EmptyBorder(0, 15, 15, 15));
@@ -1000,8 +962,10 @@ public class GUI extends JComponent implements Runnable {
             //Adding any friends that have accepted the friend request
             for (int i = 0; i < friends.size(); i++) {
                 client.receiveProfiles();
+
                 Profile currentProfile = new Profile(friends.get(i));
-                System.out.println(client.signIn(profile.getUsername(),profile.getPassword()).getFriendRequestList().get(i).getUsername());
+                System.out.println(client.signIn(profile.getUsername(),
+                        profile.getPassword()).getFriendRequestList().get(i).getUsername());
                 //Setting the button to be yes or no
                 confirmFriendRequest[i] = new JButton("✓");
                 confirmFriendRequest[i].setMinimumSize(new Dimension(25,25));
@@ -1034,9 +998,9 @@ public class GUI extends JComponent implements Runnable {
                 confirmFriendRequest[i].addActionListener(e -> {
                     if (e.getSource() == confirmFriendRequest[current]) {
                         try {
-                            //Add the friend and remove him from the list
                             profile = client.signIn(profile.getUsername(), profile.getPassword());
                             profile.addFriend(currentProfile);
+                            friends.get(current).addFriend(profile);
                             profile.removeFriendRequest(currentProfile);
                             friends.remove(current);
                             //See if hes still there and update client
@@ -1058,13 +1022,15 @@ public class GUI extends JComponent implements Runnable {
                         profilePage();
                     }
                 });
-                
+                Profile temp = new Profile(friends.get(current));
+                temp = client.signIn(friends.get(current).getUsername(), friends.get(current).getUsername());
+                temp.addFriend(profile);
                 requestPanel.add(currentRequest);
+                client.updateProfile(friends.get(current), temp);
             }
             requestPanel.setMinimumSize(new Dimension(300, 200));
             requestPanel.setMaximumSize(new Dimension(300, 200));
         }
-        
         client.sendProfiles();
         
         //Adding the friend buffer and panel to the display at gridx 1 gridy 0
