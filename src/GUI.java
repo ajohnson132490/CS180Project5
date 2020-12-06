@@ -50,7 +50,6 @@ public class GUI extends JComponent implements Runnable {
     
     // Menu Bar
     JMenu accountMenu = new JMenu("Account");
-    JMenuItem createAccount = new JMenuItem("Create a new account");
     JMenuItem editAccount = new JMenuItem("Edit your account");
     JMenuItem editInterests = new JMenuItem("Edit your interests");
     JMenuItem deleteAccount = new JMenuItem("Delete your account");
@@ -135,9 +134,6 @@ public class GUI extends JComponent implements Runnable {
     };
     
     ActionListener menuBarListener = e -> {
-        if (e.getSource() == createAccount) {
-            newAccountPage();
-        }
         if (e.getSource() == editAccount) {
             editAccountPage();
         }
@@ -678,8 +674,6 @@ public class GUI extends JComponent implements Runnable {
     public void createMenuBar(JFrame frame) throws UserNotFoundError {
         JMenuBar menuBar = new JMenuBar();
         // Account tab
-        accountMenu.add(createAccount);
-        createAccount.addActionListener(menuBarListener);
         accountMenu.add(editAccount);
         editAccount.addActionListener(menuBarListener);
         accountMenu.add(editInterests);
