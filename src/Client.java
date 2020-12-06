@@ -243,4 +243,13 @@ public class Client {
     public ArrayList<Profile> getBetterBookProfiles() {
         return betterBookProfiles;
     }
+
+    /**
+     * Prints the username of every Profile in betterBookProfiles for debugging purposes
+     */
+    public void printBetterBookProfiles() {
+        for (Profile p : getBetterBookProfiles()) {
+            System.out.println(p.getUsername());
+        }
+    }
 }
