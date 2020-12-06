@@ -160,18 +160,7 @@ public class GUI extends JComponent implements Runnable {
                         JOptionPane.INFORMATION_MESSAGE);
             }
         }
-        if (e.getSource() == confirmInterestsButton) {
-            Profile newProfile = new Profile(profile.getUsername(), profile.getPassword(),
-                    profile.getName(), profile.getContactInformation());
-            newProfile.setLikesAndInterests(profile.getLikesAndInterests());
-            newProfile.setProfilePicture(profile.getProfilePicture());
-            try {
-                client.updateProfile(profile, newProfile);
-            } catch (UserNotFoundError e1) {
-                JOptionPane.showMessageDialog(null, "Error updating profile!", "ERROR",
-                        JOptionPane.INFORMATION_MESSAGE);
-            }
-        }
+        
     };
     
     /**
@@ -418,7 +407,13 @@ public class GUI extends JComponent implements Runnable {
             for (int i = 0; i < interests.length; i ++) {
                 interestsArrayList.add(interests[i].getText());
             }
+            try {
+                profile = client.signIn(profile.getUsername(), profile.getPassword());
+            } catch (UserNotFoundError userNotFoundError) {
+                userNotFoundError.printStackTrace();
+            }
             profile.setLikesAndInterests(interestsArrayList);
+            client.sendProfiles();
             frame.dispose();
             profilePage();
         });
@@ -505,7 +500,7 @@ public class GUI extends JComponent implements Runnable {
         //Adding all the profiles to the list
         for (int i = 0; i < client.getBetterBookProfiles().size(); i++) {
             allUsers[i] = new JMenuItem(client.getBetterBookProfiles().get(i).getUsername());
-            if (allUsersMenu.getMenuComponentCount() > 0) {
+            if (allUsersMenu.getMenuComponentCount() > 1) {
                 for (int k = 0; k < client.getBetterBookProfiles().size(); k++) {
                     if (allUsersMenu.getItem(k).equals(allUsers[k])) {
                         allUsersMenu.add(allUsers[i]);
@@ -588,19 +583,15 @@ public class GUI extends JComponent implements Runnable {
                             gui = new GUI();
                             frame.add(gui, c);
                             
-                            try {
-                                //Adding the content to the frame
-                                c.gridx = 0;
-                                c.gridy = 0;
-                                frame.add(displayUserInformation(client.getBetterBookProfiles().get(finalI)), c);
-                                c.gridx = 1;
-                                frame.add(displayUserFriendList(client.getBetterBookProfiles().get(finalI)), c);
-                                c.gridx = 0;
-                                c.gridy = -1;
-                                frame.add(displayUserInterestList(client.getBetterBookProfiles().get(finalI)), c);
-                            } catch (UserNotFoundError e1) {
-                                e1.printStackTrace();
-                            }
+                            //Adding the content to the frame
+                            c.gridx = 0;
+                            c.gridy = 0;
+                            frame.add(displayUserInformation(client.getBetterBookProfiles().get(finalI)), c);
+                            c.gridx = 1;
+                            frame.add(displayUserFriendList(client.getBetterBookProfiles().get(finalI)), c);
+                            c.gridx = 0;
+                            c.gridy = -1;
+                            frame.add(displayUserInterestList(client.getBetterBookProfiles().get(finalI)), c);
                             
                             /// Making the frame visible
                             frame.setSize(800, 600);
@@ -901,11 +892,8 @@ public class GUI extends JComponent implements Runnable {
      *
      * @param currentProfile the profile that is currently being viewed
      */
-    public JPanel displayUserInterestList(Profile currentProfile) throws UserNotFoundError {
+    public JPanel displayUserInterestList(Profile currentProfile) {
         client.receiveProfiles();
-        currentProfile = client.signIn(currentProfile.getUsername(), currentProfile.getPassword());
-        
-        
         //Creating a buffer for the interests panel
         JPanel interestsBuffer = new JPanel();
         interestsBuffer.setLayout(new BoxLayout(interestsBuffer, BoxLayout.Y_AXIS));
@@ -946,6 +934,7 @@ public class GUI extends JComponent implements Runnable {
                 }
             });
         } else {
+            System.out.println("test" + currentProfile.getLikesAndInterests().get(0));
             //Adding any friends that have accepted the friend request
             for (int i = 0; i < currentProfile.getLikesAndInterests().size(); i ++) {
                 JLabel currentInterest = new JLabel(currentProfile.getLikesAndInterests().get(i));
@@ -995,7 +984,7 @@ public class GUI extends JComponent implements Runnable {
         friendPanelBuffer.add(requestPanel);
         
         //Getting a local list of all the friend requests
-        ArrayList <Profile> friends = profile.getFriendRequestList();
+        ArrayList <Profile> friends = client.signIn(profile.getUsername(),profile.getPassword()).getFriendRequestList();
         
         //Default action if no friends exist
         if (friends.size() <= 0) {
@@ -1049,11 +1038,8 @@ public class GUI extends JComponent implements Runnable {
                             profile = client.signIn(profile.getUsername(), profile.getPassword());
                             profile.addFriend(currentProfile);
                             profile.removeFriendRequest(currentProfile);
-                            System.out.println(client.signIn(profile.getUsername(), profile.getPassword()).removeFriendRequest(currentProfile));
                             friends.remove(current);
                             //See if hes still there and update client
-                            profile.getFriendRequestList().remove(current);
-                            System.out.println(profile.getFriendRequestList().toString() + " is still here");
                             frame.dispose();
                             profilePage();
                         } catch (UserNotFoundError userNotFoundError) {
