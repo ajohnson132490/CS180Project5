@@ -81,7 +81,7 @@ public class Profile implements Serializable {
      * @param toCopy Profile object to be copied
      */
     public Profile(Profile toCopy) {
-        this.username = toCopy.getName();
+        this.username = toCopy.getUsername();
         this.password = toCopy.getPassword();
         this.name = toCopy.getName();
         this.contactInformation = toCopy.getContactInformation();
@@ -91,7 +91,12 @@ public class Profile implements Serializable {
         this.likesAndInterests = toCopy.getLikesAndInterests();
         this.friendsList = toCopy.getFriendsList();
         this.friendRequestList = toCopy.getFriendRequestList();
-        this.profilePicture = toCopy.getProfilePicture();
+        try {
+            this.profilePicture = toCopy.getProfilePicture();
+        } catch (NullPointerException e) {
+            System.out.println("Error making profile due to profile picture");
+        }
+        
     }
 
     /**
