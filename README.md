@@ -73,7 +73,7 @@ This function requests the updated list of Profiles from the server, then search
 
 _public Profile locateProfile(String username)_
 
-This function requests the updated list of Profiles from the server, then searches for a Profile with the matching username. Tested by making sure that the client is receiving the most updated list from the server and is returning the correct Profile.
+This function requests the updated list of Profiles from the server, then searches for a Profile with the matching username. Tested by manually making sure that the client is receiving the most updated list from the server and is returning the correct Profile.
 
 _public Profile signIn(String username, String password) throws UserNotFoundError_
 
@@ -81,7 +81,7 @@ This function requests the updated list of Profiles from the server and checks i
 
 _public ArrayList\&lt;Profile\&gt; getBetterBookProfiles()_
 
-This function returns betterBookProfiles. Test verifying that it exists, along with verifying it has the correct return type and access modifier.
+This function returns betterBookProfiles. Test verifying that it exists, along with verifying it has the correct return type and access modifier. Further testing was done manually.
 
 _public void setBetterBookProfiles(ArrayList\&lt;Profile\&gt; betterBookProfiles)_
 

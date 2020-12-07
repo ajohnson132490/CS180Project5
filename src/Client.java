@@ -18,7 +18,7 @@ public class Client {
     private Socket sock;    // Socket used to connect to server
     private ObjectOutputStream writer;  // sends messages to server
     private ObjectInputStream objectReader; // receives messages from server
-
+    
     /**
      * Initializes new Client connected at hostName:portNumber
      *
@@ -38,7 +38,7 @@ public class Client {
             System.out.println("Error connecting to server");
         }
     }
-
+    
     /**
      * Disconnects from server
      */
@@ -60,7 +60,7 @@ public class Client {
             }
         }
     }
-
+    
     /**
      * Receives profiles sent from the server
      */
@@ -69,7 +69,7 @@ public class Client {
             // Tells the server we want to receive profiles
             writer.writeObject("receiveProfiles");
             writer.flush();
-
+            
             // Reset ArrayList
             betterBookProfiles = new ArrayList<Profile>();
             Object receive = objectReader.readObject();
@@ -83,7 +83,7 @@ public class Client {
             System.out.println("Error receiving profiles from server");
         }
     }
-
+    
     /**
      * Sends profiles to the server
      */
@@ -92,7 +92,7 @@ public class Client {
             // Tell the server we want to send profiles
             writer.writeObject("sendProfiles");
             writer.flush();
-
+            
             // Write all of the Profiles we have stored
             for (Profile p : betterBookProfiles) {
                 writer.writeObject(p);
@@ -100,13 +100,13 @@ public class Client {
             // Tell the server that it is at the end of the list
             writer.writeObject("Goodbye");
             writer.flush();
-
+            
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Error sending profiles to server");
         }
     }
-
+    
     /**
      * Creates a Profile with the given parameters and adds it to the ArrayList
      *
@@ -118,20 +118,20 @@ public class Client {
      */
     public void createProfile(String userName, String pass, String name, String contactInfo) throws UserNotFoundError {
         receiveProfiles();
-
+        
         // check if username is available
         for (Profile p : betterBookProfiles) {
             if (p.getUsername().equals(userName)) {
                 throw new UserNotFoundError("Username taken!");
             }
         }
-
+        
         // create a new Profile w given parameters, add to list, update server's list
         Profile p = new Profile(userName, pass, name, contactInfo);
         betterBookProfiles.add(p);
         sendProfiles();
     }
-
+    
     /**
      * Updates the Profile in betterBookProfiles with the desired information
      *
@@ -147,7 +147,7 @@ public class Client {
         }
         sendProfiles();
     }
-
+    
     /**
      * Deletes the given profile
      *
@@ -162,7 +162,7 @@ public class Client {
         }
         sendProfiles();
     }
-
+    
     /**
      * Sends a friend request from sending to receiving
      * Basically, adds sending to receiving's friend request list
@@ -177,7 +177,7 @@ public class Client {
         }
         sendProfiles();
     }
-
+    
     /**
      * Locates the given profile
      *
@@ -193,7 +193,7 @@ public class Client {
         }
         return -1;
     }
-
+    
     /**
      * Locates the given profile
      *
@@ -209,7 +209,7 @@ public class Client {
         }
         return null;
     }
-
+    
     /**
      * Returns the profile with matching username and password
      *
@@ -232,7 +232,7 @@ public class Client {
         }
         throw new UserNotFoundError("User not found!");
     }
-
+    
     /**
      * Returns betterBookProfiles
      *
@@ -241,7 +241,7 @@ public class Client {
     public ArrayList<Profile> getBetterBookProfiles() {
         return betterBookProfiles;
     }
-
+    
     /**
      * Sets betterBookProfiles to the specified parameter
      *

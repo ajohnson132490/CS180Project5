@@ -30,9 +30,9 @@ import static org.junit.Assert.fail;
 /**
  * A class to test Server and all of its
  * methods using JUnit4.
- *
+ * <p>
  * The requirements are as follows:
- *
+ * <p>
  * Each class must have a test verifying that it exists and inherits from the
  * correct superclass. (Hint: If it doesn't inherit from anything, it's inheriting from Object.)
  * Each field in every class must have a test verifying that it exists, along with verifying
@@ -44,32 +44,37 @@ import static org.junit.Assert.fail;
  * improper input.
  * Note: Methods solely used for GUI operations are exempt from this
  * requirement. Instead, include the testing used to verify they work in your documentation.
- *
+ * <p>
  * tests methods save, loadProfiles, and handleMessage
  */
 public class ServerTest {
-
-    public static void main(String[] args) {
+    
+    public static void main(String[] args) throws IOException {
         try {
             File f = new File("forJUNITTests/saveTestOne.txt");
             f.delete();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        Server s = new Server(new Socket());
+        s.betterBookProfiles = new ArrayList<>();
+        s.betterBookProfiles.add(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555"));
+        s.save("forJUNITTests/loadProfilesTestOne.txt");
+        
         Result result = JUnitCore.runClasses(TestCase.class);
-
+        
         if (result.wasSuccessful()) {
             System.out.println("All tests ran successfully.");
         } else {
             System.out.println("Incoming failures...");
-            for (Failure f: result.getFailures()) {
+            for (Failure f : result.getFailures()) {
                 System.out.println(f.toString());
             }
         }
     }
+    
     public static class TestCase {
-
+        
         // Exists and inherits from correct superclass
         @Test(timeout = 1_000)
         public void ServerClassDeclarationTest() {
@@ -78,28 +83,28 @@ public class ServerTest {
             int modifiers;
             Class<?> superclass;
             Class<?>[] superinterfaces;
-
+            
             // Set the class being tested
             clazz = Server.class;
             className = "Server";
-
+            
             // Perform tests
-
+            
             modifiers = clazz.getModifiers();
-
+            
             superclass = clazz.getSuperclass();
-
+            
             superinterfaces = clazz.getInterfaces();
-
+            
             Assert.assertTrue("Ensure that `" + className + "` is `public`!", Modifier.isPublic(modifiers));
-
+            
             Assert.assertFalse("Ensure that `" + className + "` is NOT `abstract`!", Modifier.isAbstract(modifiers));
-
+            
             Assert.assertEquals("Ensure that `" + className + "` extends `Object`!", Object.class, superclass);
-
+            
             Assert.assertEquals("Ensure that `" + className + "` implements Runnable!", 1, superinterfaces.length);
         }
-
+        
         // All fields exist with correct type and access modifier
         @Test(timeout = 1_000)
         public void csockFieldDeclarationTest() {
@@ -108,18 +113,18 @@ public class ServerTest {
             Field testField;
             int modifiers;
             Class<?> type;
-
+            
             // Set the field that you want to test
             String fieldName = "csock";
-
+            
             // Set the type of the field you want to test
             // Use the type + .class
             // For example, String.class or int.class
             Class<?> expectedType = Socket.class;
-
+            
             // Set the class being tested
             clazz = Server.class;
-
+            
             // Attempt to access the class field
             try {
                 testField = clazz.getDeclaredField(fieldName);
@@ -127,22 +132,22 @@ public class ServerTest {
                 Assert.fail("Ensure that `" + className + "` declares a field named `" + fieldName + "`!");
                 return;
             } //end try catch
-
+            
             // Perform tests
-
+            
             modifiers = testField.getModifiers();
-
+            
             type = testField.getType();
-
+            
             Assert.assertTrue("Ensure that `" + className + "`'s `" + fieldName + "` field is `private`!", Modifier.isPrivate(modifiers));
-
+            
             Assert.assertTrue("Ensure that `" + className + "`'s `" + fieldName + "` field is not `final`!", !Modifier.isFinal(modifiers));
-
+            
             Assert.assertFalse("Ensure that `" + className + "`'s `" + fieldName + "` field is NOT `static`!", Modifier.isStatic(modifiers));
-
+            
             Assert.assertEquals("Ensure that `" + className + "`'s `" + fieldName + "` field is the correct type!", expectedType, type);
         }
-
+        
         @Test(timeout = 1_000)
         public void betterBookProfilesFieldDeclarationTest() {
             Class<?> clazz;
@@ -150,18 +155,18 @@ public class ServerTest {
             Field testField;
             int modifiers;
             Class<?> type;
-
+            
             // Set the field that you want to test
             String fieldName = "betterBookProfiles";
-
+            
             // Set the type of the field you want to test
             // Use the type + .class
             // For example, String.class or int.class
             Class<?> expectedType = ArrayList.class;
-
+            
             // Set the class being tested
             clazz = Server.class;
-
+            
             // Attempt to access the class field
             try {
                 testField = clazz.getDeclaredField(fieldName);
@@ -169,24 +174,24 @@ public class ServerTest {
                 Assert.fail("Ensure that `" + className + "` declares a field named `" + fieldName + "`!");
                 return;
             } //end try catch
-
+            
             // Perform tests
-
+            
             modifiers = testField.getModifiers();
-
+            
             type = testField.getType();
-
+            
             Assert.assertTrue("Ensure that `" + className + "`'s `" + fieldName + "` field is not `private`!", !Modifier.isPrivate(modifiers));
-
+            
             Assert.assertTrue("Ensure that `" + className + "`'s `" + fieldName + "` field is not `final`!", !Modifier.isFinal(modifiers));
-
+            
             Assert.assertFalse("Ensure that `" + className + "`'s `" + fieldName + "` field is `static`!", !Modifier.isStatic(modifiers));
-
+            
             Assert.assertFalse("Ensure that `" + className + "`'s `" + fieldName + "` field is `volatile`!", !Modifier.isVolatile(modifiers));
-
+            
             Assert.assertEquals("Ensure that `" + className + "`'s `" + fieldName + "` field is the correct type!", expectedType, type);
         }
-
+        
         // Verifying if each method exists and has the correct return type + access modifier
         @Test(timeout = 1000)
         public void serverSaveMethodTest() {
@@ -197,46 +202,45 @@ public class ServerTest {
             Class<?> actualReturnType;
             int expectedLength = 1;
             Class<?>[] exceptions;
-
+            
             // Set the method that you want to test
             String methodName = "save";
-
+            
             // Set the return type of the method you want to test
             // Use the type + .class
             // For example, String.class or int.class
             Class<?> expectedReturnType = void.class;
-
-
+            
             // Set the class being tested
             clazz = Server.class;
-
+            
             // Attempt to access the class method
             try {
                 method = clazz.getDeclaredMethod(methodName, String.class);
             } catch (NoSuchMethodException e) {
                 Assert.fail("Ensure that `" + className + "` declares a method named `" + methodName + "` that" +
                         " has 1 String parameter!");
-
+                
                 return;
             } //end try catch
-
+            
             // Perform tests
-
+            
             modifiers = method.getModifiers();
-
+            
             actualReturnType = method.getReturnType();
-
+            
             exceptions = method.getExceptionTypes();
-
+            
             Assert.assertTrue("Ensure that `" + className + "`'s `" + methodName + "` method is `public`!", Modifier.isPublic(modifiers));
-
+            
             Assert.assertFalse("Ensure that `" + className + "`'s `" + methodName + "` method is `static`!", !Modifier.isStatic(modifiers));
-
+            
             Assert.assertEquals("Ensure that `" + className + "`'s `" + methodName + "` method has the correct return type!", expectedReturnType, actualReturnType);
-
+            
             Assert.assertEquals("Ensure that `" + className + "`'s `" + methodName + "` method has 1 `throws` clause!", expectedLength, exceptions.length);
         }
-
+        
         @Test(timeout = 1000)
         public void serverLoadProfilesMethodTest() {
             Class<?> clazz;
@@ -246,46 +250,45 @@ public class ServerTest {
             Class<?> actualReturnType;
             int expectedLength = 2;
             Class<?>[] exceptions;
-
+            
             // Set the method that you want to test
             String methodName = "loadProfiles";
-
+            
             // Set the return type of the method you want to test
             // Use the type + .class
             // For example, String.class or int.class
             Class<?> expectedReturnType = void.class;
-
-
+            
             // Set the class being tested
             clazz = Server.class;
-
+            
             // Attempt to access the class method
             try {
                 method = clazz.getDeclaredMethod(methodName, String.class);
             } catch (NoSuchMethodException e) {
                 Assert.fail("Ensure that `" + className + "` declares a method named `" + methodName + "` that" +
                         " has 1 String parameter!");
-
+                
                 return;
             } //end try catch
-
+            
             // Perform tests
-
+            
             modifiers = method.getModifiers();
-
+            
             actualReturnType = method.getReturnType();
-
+            
             exceptions = method.getExceptionTypes();
-
+            
             Assert.assertTrue("Ensure that `" + className + "`'s `" + methodName + "` method is `public`!", Modifier.isPublic(modifiers));
-
+            
             Assert.assertFalse("Ensure that `" + className + "`'s `" + methodName + "` method is `static`!", !Modifier.isStatic(modifiers));
-
+            
             Assert.assertEquals("Ensure that `" + className + "`'s `" + methodName + "` method has the correct return type!", expectedReturnType, actualReturnType);
-
+            
             Assert.assertEquals("Ensure that `" + className + "`'s `" + methodName + "` method has 2 `throws` clause!", expectedLength, exceptions.length);
         }
-
+        
         @Test(timeout = 1000)
         public void serverHandleMessageMethodTest() {
             Class<?> clazz;
@@ -295,51 +298,50 @@ public class ServerTest {
             Class<?> actualReturnType;
             int expectedLength = 0;
             Class<?>[] exceptions;
-
+            
             // Set the method that you want to test
             String methodName = "handleMessage";
-
+            
             // Set the return type of the method you want to test
             // Use the type + .class
             // For example, String.class or int.class
             Class<?> expectedReturnType = void.class;
-
-
+            
             // Set the class being tested
             clazz = Server.class;
-
+            
             // Attempt to access the class method
             try {
                 method = clazz.getDeclaredMethod(methodName, ObjectInputStream.class, ObjectOutputStream.class, String.class);
             } catch (NoSuchMethodException e) {
                 Assert.fail("Ensure that `" + className + "` declares a method named `" + methodName + "` that" +
                         " has 1 ObjectInputStream parameter, 1 ObjectOutputStream, and 1 String parameter!");
-
+                
                 return;
             } //end try catch
-
+            
             // Perform tests
-
+            
             modifiers = method.getModifiers();
-
+            
             actualReturnType = method.getReturnType();
-
+            
             exceptions = method.getExceptionTypes();
-
+            
             Assert.assertTrue("Ensure that `" + className + "`'s `" + methodName + "` method is `public`!", Modifier.isPublic(modifiers));
-
+            
             Assert.assertTrue("Ensure that `" + className + "`'s `" + methodName + "` method is `synchronized`!", Modifier.isSynchronized(modifiers));
-
+            
             Assert.assertFalse("Ensure that `" + className + "`'s `" + methodName + "` method is `static`!", !Modifier.isStatic(modifiers));
-
+            
             Assert.assertEquals("Ensure that `" + className + "`'s `" + methodName + "` method has the correct return type!", expectedReturnType, actualReturnType);
-
+            
             Assert.assertEquals("Ensure that `" + className + "`'s `" + methodName + "` method has 0 `throws` clause!", expectedLength, exceptions.length);
         }
-
+        
         // Two implementation tests per method
         @Test(timeout = 1000)
-        public void save1(){
+        public void save1() {
             Server s = new Server(new Socket()); //dummy server
             s.betterBookProfiles = new ArrayList<>();
             s.betterBookProfiles.add(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555"));
@@ -372,9 +374,9 @@ public class ServerTest {
                 return;
             }
         }
-
+        
         @Test(timeout = 1000)
-        public void save2(){
+        public void save2() {
             Server s = new Server(new Socket()); //dummy server
             s.betterBookProfiles = null;
             try {
@@ -392,7 +394,7 @@ public class ServerTest {
                 return;
             }
         }
-
+        
         @Test(timeout = 1000)
         public void loadProfiles1() throws IOException, ClassNotFoundException {
             Server s = new Server(new Socket()); //dummy server
@@ -401,7 +403,7 @@ public class ServerTest {
             Assert.assertTrue("ensure 'loadProfiles is loading profiles correctly",
                     s.betterBookProfiles.get(0).equals(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555")));
         }
-
+        
         @Test(timeout = 1000)
         public void loadProfiles2() throws IOException, ClassNotFoundException {
             Server s = new Server(new Socket()); //dummy server
@@ -412,9 +414,9 @@ public class ServerTest {
             } catch (Exception e) {
                 Assert.assertTrue("Task failed successfully.", true);
             }
-
+            
         }
-
-
+        
+        
     }
 }
