@@ -289,8 +289,8 @@ public class ClientTest {
                 ServerSocket ssock = new ServerSocket(420);
 
                 Client c = new Client("localhost", 420);
-                c.betterBookProfiles = new ArrayList<>();
-                c.betterBookProfiles.add(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555"));
+                c.setBetterBookProfiles(new ArrayList<>());
+                c.getBetterBookProfiles().add(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555"));
                 Profile user = c.signIn("jebbush69", "jebisawesome");
 
                 Assert.assertTrue("SignIn1 Friggen Failed!", user.equals(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555")));
@@ -309,8 +309,8 @@ public class ClientTest {
                 ServerSocket ssock = new ServerSocket(420);
 
                 Client c = new Client("localhost", 420);
-                c.betterBookProfiles = new ArrayList<>();
-                c.betterBookProfiles.add(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555"));
+                c.setBetterBookProfiles(new ArrayList<>());
+                c.getBetterBookProfiles().add(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555"));
                 Profile user = c.signIn("Samir", "daMonkey");
 
                 Assert.assertTrue("signIn2 Failed!", !user.equals(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555")));
@@ -337,7 +337,7 @@ public class ClientTest {
                 profiles2Test.add(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555"));
                 profiles2Test.add(new Profile("barrack", "obambruh", "2024", "8001111111"));
 
-                c.betterBookProfiles = new ArrayList<>();
+                c.setBetterBookProfiles(new ArrayList<>());
                 for(Profile p: profiles2Test){
                     c.getBetterBookProfiles().add(p);
                 }
@@ -365,7 +365,7 @@ public class ClientTest {
                 profiles2Test.add(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555"));
                 profiles2Test.add(new Profile("barrack", "obambruh", "2024", "8001111111"));
 
-                c.betterBookProfiles = new ArrayList<>();
+                c.setBetterBookProfiles(new ArrayList<>());
                 for(Profile p: profiles2Test){
                     c.getBetterBookProfiles().add(p);
                 }

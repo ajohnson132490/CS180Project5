@@ -14,7 +14,7 @@ import java.util.*;
  * @version 30 November 2020
  */
 public class Client {
-    public ArrayList<Profile> betterBookProfiles;  // ArrayList containing all profiles
+    private ArrayList<Profile> betterBookProfiles;  // ArrayList containing all profiles
     private Socket sock;    // Socket used to connect to server
     private ObjectOutputStream writer;
     private ObjectInputStream objectReader;
@@ -240,6 +240,21 @@ public class Client {
         throw new UserNotFoundError("User not found!");
     }
 
+    /**
+     * Sets betterBookProfiles to the given ArrayList
+     * Debugging purposes only
+     *
+     * @param profiles The ArrayList that betterBookProfiles should be set to
+     */
+    public void setBetterBookProfiles(ArrayList<Profile> profiles) {
+        betterBookProfiles = profiles;
+    }
+
+    /**
+     * Returns betterBookProfiles
+     *
+     * @return betterBookProfiles
+     */
     public ArrayList<Profile> getBetterBookProfiles() {
         return betterBookProfiles;
     }
