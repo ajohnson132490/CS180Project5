@@ -40,13 +40,6 @@ public class Client {
     }
 
     /**
-     * deprecated, use createProfile instead
-     */
-    public Profile createUser(String username, String password, String name, String contactInformation) {
-        return new Profile(username, password, name, contactInformation);
-    }
-
-    /**
      * Disconnects from server
      */
     public void disconnect() {
