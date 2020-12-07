@@ -31,9 +31,9 @@ import static org.junit.Assert.fail;
 /**
  * A class to test Client and all of its
  * methods using JUnit4.
- *
+ * <p>
  * The requirements are as follows:
- *
+ * <p>
  * Each class must have a test verifying that it exists and inherits from the
  * correct superclass. (Hint: If it doesn't inherit from anything, it's inheriting from Object.)
  * Each field in every class must have a test verifying that it exists, along with verifying
@@ -45,7 +45,7 @@ import static org.junit.Assert.fail;
  * improper input.
  * Note: Methods solely used for GUI operations are exempt from this
  * requirement. Instead, include the testing used to verify they work in your documentation.
- *
+ * <p>
  * tests methods getBetterBookProfiles, signIn
  */
 public class ClientTest {
@@ -58,11 +58,12 @@ public class ClientTest {
             System.out.println("All tests ran successfully.");
         } else {
             System.out.println("Incoming failures... sad");
-            for (Failure f: result.getFailures()) {
+            for (Failure f : result.getFailures()) {
                 System.out.println(f.toString());
             }
         }
     }
+
     public static class TestCase {
 
         // Exists and inherits from correct superclass
@@ -281,7 +282,7 @@ public class ClientTest {
 
         // Two implementation tests per method
         @Test(timeout = 1000)
-        public void signIn1(){
+        public void signIn1() {
             try {
 
                 //new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555")
@@ -289,8 +290,8 @@ public class ClientTest {
                 ServerSocket ssock = new ServerSocket(420);
 
                 Client c = new Client("localhost", 420);
-                c.betterBookProfiles = new ArrayList<>();
-                c.betterBookProfiles.add(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555"));
+                c.setBetterBookProfiles(new ArrayList<>());
+                c.getBetterBookProfiles().add(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555"));
                 Profile user = c.signIn("jebbush69", "jebisawesome");
 
                 Assert.assertTrue("SignIn1 Friggen Failed!", user.equals(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555")));
@@ -301,7 +302,7 @@ public class ClientTest {
         }
 
         @Test(timeout = 1000)
-        public void signIn2(){
+        public void signIn2() {
             try {
 
                 //new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555")
@@ -309,12 +310,12 @@ public class ClientTest {
                 ServerSocket ssock = new ServerSocket(420);
 
                 Client c = new Client("localhost", 420);
-                c.betterBookProfiles = new ArrayList<>();
-                c.betterBookProfiles.add(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555"));
+                c.setBetterBookProfiles(new ArrayList<>());
+                c.getBetterBookProfiles().add(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555"));
                 Profile user = c.signIn("Samir", "daMonkey");
 
                 Assert.assertTrue("signIn2 Failed!", !user.equals(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555")));
-            } catch (UserNotFoundError e){
+            } catch (UserNotFoundError e) {
                 System.out.println("ProfileNotFound");
                 Assert.assertTrue("signIn2 Failed Successfully.", true);
             } catch (Exception e) {
@@ -337,8 +338,8 @@ public class ClientTest {
                 profiles2Test.add(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555"));
                 profiles2Test.add(new Profile("barrack", "obambruh", "2024", "8001111111"));
 
-                c.betterBookProfiles = new ArrayList<>();
-                for(Profile p: profiles2Test){
+                c.setBetterBookProfiles(new ArrayList<>());
+                for (Profile p : profiles2Test) {
                     c.getBetterBookProfiles().add(p);
                 }
 
@@ -365,8 +366,8 @@ public class ClientTest {
                 profiles2Test.add(new Profile("jebbush69", "jebisawesome", "Jeb Bush", "8005555555"));
                 profiles2Test.add(new Profile("barrack", "obambruh", "2024", "8001111111"));
 
-                c.betterBookProfiles = new ArrayList<>();
-                for(Profile p: profiles2Test){
+                c.setBetterBookProfiles(new ArrayList<>());
+                for (Profile p : profiles2Test) {
                     c.getBetterBookProfiles().add(p);
                 }
 

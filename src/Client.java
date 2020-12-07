@@ -14,10 +14,10 @@ import java.util.*;
  * @version 30 November 2020
  */
 public class Client {
-    public ArrayList<Profile> betterBookProfiles;  // ArrayList containing all profiles
+    private ArrayList<Profile> betterBookProfiles;  // ArrayList containing all profiles
     private Socket sock;    // Socket used to connect to server
-    private ObjectOutputStream writer;
-    private ObjectInputStream objectReader;
+    private ObjectOutputStream writer;  // sends messages to server
+    private ObjectInputStream objectReader; // receives messages from server
 
     /**
      * Initializes new Client connected at hostName:portNumber
@@ -240,8 +240,22 @@ public class Client {
         throw new UserNotFoundError("User not found!");
     }
 
+    /**
+     * Returns betterBookProfiles
+     *
+     * @return betterBookProfiles, the ArrayList containing the client's profiles
+     */
     public ArrayList<Profile> getBetterBookProfiles() {
         return betterBookProfiles;
+    }
+
+    /**
+     * Sets betterBookProfiles to the specified parameter
+     *
+     * @param betterBookProfiles the new value for betterBookProfiles
+     */
+    public void setBetterBookProfiles(ArrayList<Profile> betterBookProfiles) {
+        this.betterBookProfiles = betterBookProfiles;
     }
 
     /**
