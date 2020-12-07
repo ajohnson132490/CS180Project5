@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutionException;
  * https://stackoverflow.com/questions/13334198/java-custom-buttons-in-showinputdialog
  *
  * @author Austin Johnson | CS18000 Project 5 | Group 007-2
- * @version 25 November 2020
+ * @version 6 December 2020
  */
 
 public class GUI extends JComponent implements Runnable {
@@ -325,6 +325,7 @@ public class GUI extends JComponent implements Runnable {
                     newProfile.setProfilePicture(image);
                     System.out.println("This is the new pfp: " + newProfile.getProfilePicture()); //test
                     try {
+                        profile = client.signIn(profile.getUsername(), profile.getPassword());
                         client.updateProfile(profile, newProfile);
                         System.out.println("Client updated"); //test
                     } catch (UserNotFoundError e1) {
@@ -495,7 +496,7 @@ public class GUI extends JComponent implements Runnable {
             allUsers[i] = new JMenuItem(client.getBetterBookProfiles().get(i).getUsername());
             if (allUsersMenu.getMenuComponentCount() > 1) {
                 for (int k = 0; k < client.getBetterBookProfiles().size(); k++) {
-                    if (allUsersMenu.getItem(k).equals(allUsers[k])) {
+                    if (!allUsersMenu.getItem(k).equals(allUsers[k])) {
                         allUsersMenu.add(allUsers[i]);
                     }
                 }
@@ -759,12 +760,11 @@ public class GUI extends JComponent implements Runnable {
         contactInformation = new JLabel("Contact Info:" + currentProfile.getContactInformation());
         contactInformation.setBorder(new EmptyBorder(0, 0, 15, 0));
         contactInformation.setFont(new Font("Verdana", Font.PLAIN, 18));
-
-        if (!currentProfile.getAboutMe().equals("")) {
+        
             aboutMe = new JLabel(currentProfile.getAboutMe());
             aboutMe.setBorder(new EmptyBorder(0, 0, 15, 0));
             aboutMe.setFont(new Font("Verdana", Font.PLAIN, 18));
-        }
+        
 
         privacySetting = new JLabel("Current Privacy Setting: " + currentProfile.getPrivacySetting());
         privacySetting.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -958,8 +958,6 @@ public class GUI extends JComponent implements Runnable {
                 client.receiveProfiles();
 
                 Profile currentProfile = new Profile(friends.get(i));
-                System.out.println(client.signIn(profile.getUsername(),
-                        profile.getPassword()).getFriendRequestList().get(i).getUsername());
                 //Setting the button to be yes or no
                 confirmFriendRequest[i] = new JButton("✓");
                 confirmFriendRequest[i].setMinimumSize(new Dimension(25,25));
