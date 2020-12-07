@@ -250,13 +250,4 @@ public class Client {
     public void setBetterBookProfiles(ArrayList<Profile> betterBookProfiles) {
         this.betterBookProfiles = betterBookProfiles;
     }
-
-    /**
-     * Prints the username of every Profile in betterBookProfiles for debugging purposes
-     */
-    public void printBetterBookProfiles() {
-        for (Profile p : getBetterBookProfiles()) {
-            System.out.println(p.getUsername());
-        }
-    }
 }
